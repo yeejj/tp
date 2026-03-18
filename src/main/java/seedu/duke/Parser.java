@@ -69,8 +69,11 @@ public class Parser {
         case "edit":
             handleEdit(arguments);
             break;
+        case "help":
+            handleHelp();
+            break;
         default:
-            throw new IllegalArgumentException("Unknown command. Use add, list, edit, delete, or clear.");
+            throw new IllegalArgumentException("Unknown command. Use add, list, edit, delete, clear, or help.");
         }
     }
 
@@ -165,5 +168,42 @@ public class Parser {
 
         list.editTransaction(id, date, desc, amount, type, currency);
         System.out.println("Transaction edited successfully.");
+    }
+
+    private void handleHelp() {
+        System.out.println("=== Ledger67 Help ===");
+        System.out.println("Available commands:");
+        System.out.println();
+        System.out.println("1. add - Add a new transaction");
+        System.out.println("   Format: add -d DATE -desc DESCRIPTION -a AMOUNT -t TYPE -c CURRENCY");
+        System.out.println("   Example: add -d 18/03/2026 -desc \"Office supplies\" -a 45.50 -t debit -c SGD");
+        System.out.println();
+        System.out.println("2. list - Display all transactions");
+        System.out.println("   Format: list");
+        System.out.println();
+        System.out.println("3. edit - Modify an existing transaction");
+        System.out.println("   Format: edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]");
+        System.out.println("   Example: edit 1 -desc \"Updated description\" -a 50.00");
+        System.out.println();
+        System.out.println("4. delete - Remove a transaction");
+        System.out.println("   Format: delete ID");
+        System.out.println("   Example: delete 3");
+        System.out.println();
+        System.out.println("5. clear - Remove all transactions");
+        System.out.println("   Format: clear");
+        System.out.println();
+        System.out.println("6. help - Show this help message");
+        System.out.println("   Format: help");
+        System.out.println();
+        System.out.println("7. exit - Exit the application");
+        System.out.println("   Format: exit");
+        System.out.println();
+        System.out.println("=== Additional Information ===");
+        System.out.println("- DATE format: DD/MM/YYYY (e.g., 18/03/2026)");
+        System.out.println("- TYPE must be either 'debit' or 'credit'");
+        System.out.println("- CURRENCY must be one of: SGD, USD, EUR");
+        System.out.println("- ID is shown when using the 'list' command");
+        System.out.println();
+        System.out.println("For detailed documentation, please refer to the User Guide.");
     }
 }

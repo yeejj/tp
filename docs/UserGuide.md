@@ -2,41 +2,205 @@
 
 ## Introduction
 
-{Give a product intro}
+**Ledger67** is a command-line double-entry accounting system designed to help individuals and small businesses manage their financial transactions efficiently. Built on the principles of double-entry bookkeeping, Ledger67 ensures that every financial transaction is recorded with both debit and credit entries, maintaining the fundamental accounting equation: **Assets = Liabilities + Equity**.
+
+Whether you're a student learning accounting, a small business owner, or someone who wants to better manage personal finances, Ledger67 provides a simple yet powerful way to track your financial activities with proper accounting rigor.
 
 ## Quick Start
 
-{Give steps to get started quickly}
+### Prerequisites
+1. Ensure that you have **Java 17 or above** installed on your computer.
+2. Download the latest version of `Ledger67` from the project repository.
 
-1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `Duke` from [here](http://link.to/duke).
+### Getting Started
+#### Option 1: Using the JAR file (Simplest)
+1. **Download the application**: Obtain the `tp.jar` file from the latest release.
+2. **Run the application**: Open a terminal and navigate to the directory containing `tp.jar`, then run:
+   ```
+   java -jar tp.jar
+   ```
 
-## Features 
+#### Option 2: Using Gradle (For Developers)
+If you have the source code and want to build from source:
+1. **Navigate to project directory**:
+   ```
+   cd /path/to/ledger67
+   ```
+2. **Build the project using Gradle**:
+   ```
+   ./gradlew build
+   ```
+3. **Run the application**:
+   ```
+   ./gradlew run
+   ```
+   Or to create a runnable JAR:
+   ```
+   ./gradlew shadowJar
+   java -jar build/libs/tp-all.jar
+   ```
 
-{Give detailed description of each feature}
+3. **Start recording transactions**: Use the commands below to add, view, edit, and manage your financial transactions.
 
-### Adding a todo: `todo`
-Adds a new item to the list of todo items.
+## Understanding Double-Entry Accounting
 
-Format: `todo n/TODO_NAME d/DEADLINE`
+### What is Double-Entry Bookkeeping?
+Double-entry bookkeeping is an accounting method where every financial transaction affects at least two accounts. For every debit entry, there must be a corresponding credit entry of equal value. This system ensures that the accounting equation always remains balanced.
 
-* The `DEADLINE` can be in a natural language format.
-* The `TODO_NAME` cannot contain punctuation.  
+### Key Concepts for Beginners
 
-Example of usage: 
+#### 1. The Accounting Equation
+```
+Assets = Liabilities + Equity
+```
+- **Assets**: What you own (cash, inventory, equipment)
+- **Liabilities**: What you owe (loans, accounts payable)
+- **Equity**: Your ownership interest in the business
 
-`todo n/Write the rest of the User Guide d/next week`
+#### 2. Debit vs. Credit
+- **Debit (Dr)**: An entry on the left side of an account
+- **Credit (Cr)**: An entry on the right side of an account
 
-`todo n/Refactor the User Guide to remove passive voice d/13/04/2020`
+#### 3. How Transactions Work in Ledger67
+In Ledger67, each transaction you record represents one side of a double-entry. The system automatically ensures that for every transaction you enter, there's an implied corresponding entry to maintain balance.
+
+### Example: Recording a Sale
+When you make a sale for $100 cash:
+- **Debit**: Cash account increases by $100 (asset increases)
+- **Credit**: Revenue account increases by $100 (equity increases)
+
+In Ledger67, you would record this as a single transaction, and the system understands the double-entry implications.
+
+## Features
+
+### Adding a Transaction: `add`
+Adds a new financial transaction to your ledger.
+
+**Format**: `add -d DATE -desc DESCRIPTION -a AMOUNT -t TYPE -c CURRENCY`
+
+**Parameters**:
+- `-d DATE`: Transaction date in DD/MM/YYYY format (e.g., 18/03/2026)
+- `-desc DESCRIPTION`: Brief description of the transaction
+- `-a AMOUNT`: Transaction amount (positive number)
+- `-t TYPE`: Transaction type - either `debit` or `credit`
+- `-c CURRENCY`: Currency code - `SGD`, `USD`, or `EUR`
+
+**Examples**:
+```
+add -d 18/03/2026 -desc "Office supplies purchase" -a 45.50 -t debit -c SGD
+add -d 18/03/2026 -desc "Consulting fee received" -a 500.00 -t credit -c USD
+```
+
+### Listing All Transactions: `list`
+Displays all recorded transactions in chronological order.
+
+**Format**: `list`
+
+**Example**:
+```
+list
+```
+Output:
+```
+ID: 1 | Date: 18/03/2026 | Desc: Office supplies purchase | Amount: 45.50 | Type: debit | Currency: SGD
+ID: 2 | Date: 18/03/2026 | Desc: Consulting fee received | Amount: 500.00 | Type: credit | Currency: USD
+```
+
+### Editing a Transaction: `edit`
+Modifies an existing transaction.
+
+**Format**: `edit ID [FIELD_UPDATES]`
+
+**Parameters**:
+- `ID`: The transaction ID to edit (shown in `list` command)
+- Field updates (any combination):
+  - `-d NEW_DATE`: Update transaction date
+  - `-desc NEW_DESCRIPTION`: Update description
+  - `-a NEW_AMOUNT`: Update amount
+  - `-t NEW_TYPE`: Update type (debit/credit)
+  - `-c NEW_CURRENCY`: Update currency
+
+**Examples**:
+```
+edit 1 -desc "Office stationery purchase" -a 47.25
+edit 2 -t debit -c EUR
+```
+
+### Deleting a Transaction: `delete`
+Removes a transaction from the ledger.
+
+**Format**: `delete ID`
+
+**Parameters**:
+- `ID`: The transaction ID to delete
+
+**Example**:
+```
+delete 3
+```
+
+### Clearing All Transactions: `clear`
+Removes all transactions from the ledger (use with caution!).
+
+**Format**: `clear`
+
+**Example**:
+```
+clear
+```
+
+### Getting Help: `help`
+Displays available commands and usage instructions.
+
+**Format**: `help`
+
+**Example**:
+```
+help
+```
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
+**Q**: How do I transfer my data to another computer?
 
-**A**: {your answer here}
+**A**: Ledger67 currently stores transactions in memory during your session. For data persistence, you would need to implement file storage or database integration in future versions.
+
+**Q**: What's the difference between debit and credit in simple terms?
+
+**A**: Think of debit as "what comes in" or "expenses/increases in assets," and credit as "what goes out" or "income/increases in liabilities or equity." In Ledger67, you record transactions based on how they affect your accounts.
+
+**Q**: Can I use Ledger67 for personal finance tracking?
+
+**A**: Absolutely! While based on double-entry principles used in business accounting, Ledger67 works perfectly for personal finance. Record expenses as debits and income as credits to maintain a clear picture of your financial health.
+
+**Q**: What currencies does Ledger67 support?
+
+**A**: Currently, Ledger67 supports SGD (Singapore Dollar), USD (US Dollar), and EUR (Euro). More currencies can be added in future updates.
+
+**Q**: How does Ledger67 handle the double-entry aspect if I only enter one side?
+
+**A**: Ledger67 is designed as a simplified double-entry system. When you record a transaction, you're entering one side of the entry (e.g., an expense debit). The system assumes there's a corresponding credit to cash or accounts payable, making it easier for users while maintaining accounting principles.
 
 ## Command Summary
 
-{Give a 'cheat sheet' of commands here}
+| Command | Format | Description |
+|---------|--------|-------------|
+| **Add** | `add -d DATE -desc DESC -a AMOUNT -t TYPE -c CURRENCY` | Add a new transaction |
+| **List** | `list` | Display all transactions |
+| **Edit** | `edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]` | Edit an existing transaction |
+| **Delete** | `delete ID` | Remove a transaction |
+| **Clear** | `clear` | Remove all transactions |
+| **Help** | `help` | Show available commands |
+| **Exit** | `exit` | Exit the application |
 
-* Add todo `todo n/TODO_NAME d/DEADLINE`
+## Tips for Effective Use
+
+1. **Be Consistent**: Use clear, descriptive transaction descriptions that you'll understand later.
+2. **Regular Updates**: Record transactions regularly to maintain accurate financial records.
+3. **Review Periodically**: Use the `list` command weekly or monthly to review your financial position.
+4. **Backup Important Data**: Since transactions are stored in memory, consider exporting or noting down important transactions.
+5. **Learn the Basics**: Understanding basic accounting principles will help you get the most out of Ledger67.
+
+---
+
+*Ledger67 - Simplifying double-entry accounting for everyone*
