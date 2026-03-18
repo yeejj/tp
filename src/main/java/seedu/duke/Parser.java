@@ -13,12 +13,17 @@ import java.util.logging.Logger;
 public class Parser {
     private static Logger logger = Logger.getLogger("Parser");
     private TransactionsList list;
+    private CurrencyConverter converter;
     
 
     public Parser(TransactionsList list) {
         assert list != null : "Parser requires a valid TransactionsList instance.";
         this.list = list;
+        ExchangeRateStorage rateStorage = new ExchangeRateStorage("data/exchange-rates.json");
+        Map<String, Double> rates = rateStorage.loadRates();
+        this.converter = new CurrencyConverter(rates);
     }
+
 
     public void start() {
         Scanner scanner = new Scanner(System.in);
@@ -68,6 +73,9 @@ public class Parser {
             break;
         case "edit":
             handleEdit(arguments);
+            break;
+        case "convert":
+            handleConvert(arguments);
             break;
         case "help":
             handleHelp();
@@ -168,6 +176,32 @@ public class Parser {
 
         list.editTransaction(id, date, desc, amount, type, currency);
         System.out.println("Transaction edited successfully.");
+    }
+
+    private void handleConvert(String args) {
+        Map<String, String> map = parseArguments(args);
+
+        String amountStr = map.get("-a");
+        String from = map.get("-from");
+        String to = map.get("-to");
+
+        if (amountStr == null || from == null || to == null) {
+            throw new IllegalArgumentException("Missing arguments for convert.");
+        }
+
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Amount must be a valid number.");
+        }
+
+        from = CurrencyValidator.validateAndGet(from);
+        to = CurrencyValidator.validateAndGet(to);
+
+        double result = converter.convert(amount, from, to);
+
+        System.out.printf("%.2f %s = %.2f %s%n", amount, from, result, to);
     }
 
     private void handleHelp() {
