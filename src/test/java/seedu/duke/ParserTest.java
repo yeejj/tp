@@ -91,7 +91,7 @@ public class ParserTest {
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
-        assertTrue(output.contains("All transactions cleared."));
+        assertTrue(output.contains("All transactions have been cleared."));
         assertTrue(output.contains("No transactions found."));
     }
 }

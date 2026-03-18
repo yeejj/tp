@@ -99,7 +99,7 @@ public class TransactionsListTest {
         list.listTransactions();
 
         String output = outputStreamCaptor.toString();
-        Assertions.assertTrue(output.contains("All transactions cleared."));
+        Assertions.assertTrue(output.contains("All transactions have been cleared."));
         Assertions.assertTrue(output.contains("No transactions found."));
     }
 }

@@ -41,7 +41,7 @@ public class TransactionsList {
     public void clearTransactions() {
         transactions.clear();
         save();
-        System.out.println("All transactions cleared.");
+        System.out.println("All transactions have been cleared.");
     }
 
     public void editTransaction(int id, String date, String desc, Double amount, String type, String currency) {
