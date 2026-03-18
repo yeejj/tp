@@ -11,8 +11,10 @@ import java.util.logging.Logger;
  * executes transaction commands.
  */
 public class Parser {
-    private TransactionsList list;
     private static Logger logger = Logger.getLogger("Parser");
+    private TransactionsList list;
+    
+
     public Parser(TransactionsList list) {
         assert list != null : "Parser requires a valid TransactionsList instance.";
         this.list = list;
