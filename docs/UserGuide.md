@@ -149,6 +149,57 @@ Removes all transactions from the ledger (use with caution!).
 clear
 ```
 
+### Currency Conversion: `convert`
+Converts amounts between different currencies using current exchange rates.
+
+**Format**: `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY`
+
+**Parameters**:
+- `-a AMOUNT`: Amount to convert (positive number)
+- `-from SOURCE_CURRENCY`: Source currency code - `SGD`, `USD`, or `EUR`
+- `-to TARGET_CURRENCY`: Target currency code - `SGD`, `USD`, or `EUR`
+
+**Example**:
+```
+convert -a 100 -from USD -to SGD
+```
+Output:
+```
+100.00 USD = 135.50 SGD
+```
+
+### Converting Existing Transactions: `convert transaction`
+Converts an existing transaction to a different currency.
+
+**Format**: `convert transaction ID -to TARGET_CURRENCY`
+
+**Parameters**:
+- `ID`: The transaction ID to convert (shown in `list` command)
+- `-to TARGET_CURRENCY`: Target currency code - `SGD`, `USD`, or `EUR`
+
+**Example**:
+```
+convert transaction 3 -to SGD
+```
+Output:
+```
+Transaction 3: 50.00 USD = 67.75 SGD
+```
+
+### Refreshing Exchange Rates: `rates`
+Refreshes live exchange rates from external sources.
+
+**Format**: `rates refresh`
+
+**Example**:
+```
+rates refresh
+```
+Output:
+```
+Exchange rates refreshed successfully for 2026-03-19.
+```
+
 ### Getting Help: `help`
 Displays available commands and usage instructions.
 
@@ -190,6 +241,9 @@ help
 | **Edit** | `edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]` | Edit an existing transaction |
 | **Delete** | `delete ID` | Remove a transaction |
 | **Clear** | `clear` | Remove all transactions |
+| **Convert** | `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY` | Convert currencies |
+| **Convert Transaction** | `convert transaction ID -to TARGET_CURRENCY` | Convert existing transaction |
+| **Rates** | `rates refresh` | Refresh live exchange rates |
 | **Help** | `help` | Show available commands |
 | **Exit** | `exit` | Exit the application |
 
