@@ -167,6 +167,8 @@ Output:
 ```
 100.00 USD = 135.50 SGD
 ```
+**Note**
+- This is a view-mode feature only. It does NOT overwrite the stored transaction currency or amount.
 
 ### Converting Existing Transactions: `convert transaction`
 Converts an existing transaction to a different currency.
@@ -185,6 +187,28 @@ Output:
 ```
 Transaction 3: 50.00 USD = 67.75 SGD
 ```
+**Note**
+- This is a view-mode feature only. It does NOT overwrite the stored transaction currency or amount.
+
+### Converting All Listed Transactions: `list transaction -to`
+Converts all existing transactions to a different currency.
+
+**Format**: `list transaction -to TARGET_CURRENCY`
+
+**Parameters**:
+- `-to TARGET_CURRENCY`: Target currency code - `SGD`, `USD`, or `EUR`
+
+**Example**:
+```
+list transaction -to SGD
+```
+Output:
+```
+ID: 1 | Date: 18/03/2026 | Desc: "Office supplies purchase" | Amount: 45.50 | Type: debit | Currency: SGD
+ID: 2 | Date: 18/03/2026 | Desc: "Consulting fee received" | Amount: 500.00 | Type: credit | Currency: USD | Display: 669.72 SGD
+```
+**Note**
+- This is a view-mode feature only. It does NOT overwrite the stored transaction currency or amount.
 
 ### Refreshing Exchange Rates: `rates`
 Refreshes live exchange rates from external sources.
@@ -234,18 +258,19 @@ help
 
 ## Command Summary
 
-| Command | Format | Description |
-|---------|--------|-------------|
-| **Add** | `add -d DATE -desc DESC -a AMOUNT -t TYPE -c CURRENCY` | Add a new transaction |
-| **List** | `list` | Display all transactions |
-| **Edit** | `edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]` | Edit an existing transaction |
-| **Delete** | `delete ID` | Remove a transaction |
-| **Clear** | `clear` | Remove all transactions |
-| **Convert** | `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY` | Convert currencies |
-| **Convert Transaction** | `convert transaction ID -to TARGET_CURRENCY` | Convert existing transaction |
-| **Rates** | `rates refresh` | Refresh live exchange rates |
-| **Help** | `help` | Show available commands |
-| **Exit** | `exit` | Exit the application |
+| Command                      | Format                                                               | Description                       |
+|------------------------------|----------------------------------------------------------------------|-----------------------------------|
+| **Add**                      | `add -d DATE -desc DESC -a AMOUNT -t TYPE -c CURRENCY`               | Add a new transaction             |
+| **List**                     | `list`                                                               | Display all transactions          |
+| **Edit**                     | `edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]` | Edit an existing transaction      |
+| **Delete**                   | `delete ID`                                                          | Remove a transaction              |
+| **Clear**                    | `clear`                                                              | Remove all transactions           |
+| **Convert**                  | `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY`        | Convert currencies                |
+| **Convert Transaction**      | `convert transaction ID -to TARGET_CURRENCY`                         | Convert existing transaction      |
+| **Convert All Transactions** | `list transaction -to TARGET_CURRENCY`                               | Convert ALL existing transactions |
+| **Rates**                    | `rates refresh`                                                      | Refresh live exchange rates       |
+| **Help**                     | `help`                                                               | Show available commands           |
+| **Exit**                     | `exit`                                                               | Exit the application              |
 
 ## Tips for Effective Use
 

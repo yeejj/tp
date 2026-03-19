@@ -296,43 +296,62 @@ public class Parser {
         System.out.println("=== Ledger67 Help ===");
         System.out.println("Available commands:");
         System.out.println();
+
         System.out.println("1. add - Add a new transaction");
         System.out.println("   Format: add -d DATE -desc DESCRIPTION -a AMOUNT -t TYPE -c CURRENCY");
         System.out.println("   Example: add -d 18/03/2026 -desc Office supplies -a 45.50 -t debit -c SGD");
         System.out.println();
+
         System.out.println("2. list - Display all transactions");
         System.out.println("   Format: list");
         System.out.println("   Optional: list transaction -to CURRENCY");
         System.out.println("   Example: list transaction -to USD");
         System.out.println();
-        System.out.println("3. edit - Modify an existing transaction");
+
+        System.out.println("3. list transaction -to CURRENCY - Display transactions with converted view values");
+        System.out.println("   Format: list transaction -to CURRENCY");
+        System.out.println("   Example: list transaction -to USD");
+        System.out.println("   Note: This is a view-mode feature only. It does NOT overwrite the stored transactions.");
+        System.out.println();
+
+        System.out.println("4. edit - Modify an existing transaction");
         System.out.println("   Format: edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]");
         System.out.println("   Example: edit 1 -desc Updated description -a 50.00");
         System.out.println();
-        System.out.println("4. delete - Remove a transaction");
+
+        System.out.println("5. delete - Remove a transaction");
         System.out.println("   Format: delete ID");
         System.out.println("   Example: delete 3");
         System.out.println();
-        System.out.println("5. clear - Remove all transactions");
+
+        System.out.println("6. clear - Remove all transactions");
         System.out.println("   Format: clear");
         System.out.println();
-        System.out.println("6. convert - Convert currencies");
+
+        System.out.println("7. convert - Convert currencies");
         System.out.println("   Format: convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY");
         System.out.println("   Example: convert -a 100 -from USD -to SGD");
+        System.out.println("   Note: This is a view-mode feature only. It does NOT create or store a transaction.");
         System.out.println();
-        System.out.println("7. convert transaction - Convert an existing transaction");
+
+        System.out.println("8. convert transaction - Convert an existing transaction");
         System.out.println("   Format: convert transaction ID -to TARGET_CURRENCY");
         System.out.println("   Example: convert transaction 3 -to SGD");
+        System.out.println("   Note: This is a view-mode feature only. It does NOT modify the stored transaction.");
         System.out.println();
-        System.out.println("8. rates - Refresh live exchange rates");
+
+        System.out.println("9. rates - Refresh live exchange rates");
         System.out.println("   Format: rates refresh");
         System.out.println();
-        System.out.println("9. help - Show this help message");
+
+        System.out.println("10. help - Show this help message");
         System.out.println("   Format: help");
         System.out.println();
-        System.out.println("10. exit - Exit the application");
+
+        System.out.println("11. exit - Exit the application");
         System.out.println("   Format: exit");
         System.out.println();
+
         System.out.println("=== Additional Information ===");
         System.out.println("- DATE format: DD/MM/YYYY (e.g., 18/03/2026)");
         System.out.println("- TYPE must be either 'debit' or 'credit'");
@@ -340,6 +359,7 @@ public class Parser {
         System.out.println("- ID is shown when using the 'list' command");
         System.out.println("- Transactions are stored locally on your machine");
         System.out.println("- Exchange rates are loaded from exchange-rates.json");
+        System.out.println("- Converted values shown by convert or list -to are display-only and are not stored");
         System.out.println();
         System.out.println("For detailed documentation, please refer to the User Guide.");
     }
