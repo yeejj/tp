@@ -3,11 +3,13 @@ package seedu.duke;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Stores and manages all transactions in memory, and saves them using Storage.
  */
 public class TransactionsList {
+    private static final Logger logger = Logger.getLogger("TransactionsList");
     private final List<Transaction> transactions;
     private final Storage storage;
 
@@ -37,6 +39,7 @@ public class TransactionsList {
     }
 
     public void addTransaction(Transaction transaction) {
+        logger.info("Adding transactions: " + transaction);
         transactions.add(transaction);
         save();
     }
@@ -77,18 +80,21 @@ public class TransactionsList {
     }
 
     public void deleteTransaction(int id) {
+        logger.info("Deleting transaction with ID: " + id);
         Transaction transaction = findById(id);
         transactions.remove(transaction);
         save();
     }
 
     public void clearTransactions() {
+        logger.info("Clearing all transactions.");
         transactions.clear();
         save();
         System.out.println("All transactions have been cleared.");
     }
 
     public void editTransaction(int id, String date, String desc, Double amount, String type, String currency) {
+        logger.info("Editing transactions with ID: " + id);
         Transaction transaction = findById(id);
         transaction.update(date, desc, amount, type, currency);
         save();
