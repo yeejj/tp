@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+
+actor User
+participant "Duke" as Duke
+participant "Parser" as Parser
+participant "TransactionsList" as TransactionsList
+participant "Transaction" as Transaction
+participant "CurrencyValidator" as CurrencyValidator
+participant "TransactionType" as TransactionType
+
+User -> Duke : enters "add transaction -d 15/03/2023 -desc Groceries -a 50.0 -t debit -c USD"
+Duke -> Parser : start()
+Parser -> Parser : processInput("add transaction -d 15/03/2023 -desc Groceries -a 50.0 -t debit -c USD")
+Parser -> Parser : parseArguments("-d 15/03/2023 -desc Groceries -a 50.0 -t debit -c USD")
+Parser -> Parser : handleAdd(map)
+
+Parser -> TransactionType : new TransactionType("debit")
+TransactionType --> Parser : validates type
+
+Parser -> CurrencyValidator : validateAndGet("USD")
+CurrencyValidator --> Parser : validates currency
+
+Parser -> Transaction : new Transaction("15/03/2023", "Groceries", 50.0, "debit", "USD")
+Transaction -> Transaction : parseDate("15/03/2023")
+Transaction -> Transaction : auto-increment ID
+Transaction --> Parser : returns Transaction instance
+
+Parser -> TransactionsList : addTransaction(transaction)
+TransactionsList -> TransactionsList : transactions.add(transaction)
+TransactionsList --> Parser : success
+
+Parser -> System.out : "Transaction added successfully."
+Parser --> Duke : returns
+Duke --> User : displays success message
+
+note over Parser,Transaction
+  Validation chain:
+  1. TransactionType validates "debit"
+  2. CurrencyValidator validates "USD" 
+  3. Transaction validates date format
+  4. Transaction auto-generates ID
+end note
+
+note over TransactionsList
+  ArrayList stores transaction
+  Size increases by 1
+  Transaction ID preserved
+end note
+@enduml

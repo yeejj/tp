@@ -1,0 +1,51 @@
+@startuml
+!define RECTANGLE class
+skinparam backgroundColor #EEEBDC
+skinparam componentStyle rectangle
+
+package "Transaction Manager" {
+  component [Main] as Duke
+  component [Parser] as Parser
+  component [Transaction Management] as TransactionsList
+  component [Data Model] as Transaction
+  component [Validation] as Validators
+}
+
+Duke --> Parser : creates
+Duke --> TransactionsList : creates
+
+Parser --> TransactionsList : calls operations
+TransactionsList --> Transaction : manages
+Transaction --> Validators : uses
+
+note right of Duke
+  Main entry point
+  Initializes components
+  Starts input loop
+end note
+
+note right of Parser
+  Reads user input
+  Parses commands
+  Validates arguments
+  Calls TransactionsList
+end note
+
+note right of TransactionsList
+  Stores transactions
+  CRUD operations
+  Auto-increments IDs
+end note
+
+note right of Transaction
+  Represents single transaction
+  Contains: date, description,
+  amount, type, currency
+end note
+
+note right of Validators
+  Validates transaction types
+  Validates currency codes
+  Validates date format
+end note
+@enduml

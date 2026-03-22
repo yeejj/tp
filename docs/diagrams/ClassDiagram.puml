@@ -1,0 +1,111 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam class {
+    BackgroundColor #FFF
+    BorderColor #333
+    ArrowColor #333
+    FontSize 12
+}
+
+class Duke {
+  -main(args: String[]): void
+  +logo: String
+  +transactionList: TransactionsList
+  +parser: Parser
+}
+
+class Parser {
+  -logger: Logger
+  -list: TransactionsList
+  +Parser(list: TransactionsList)
+  +start(): void
+  -processInput(input: String): void
+  -parseArguments(args: String): Map<String, String>
+  -handleAdd(args: String): void
+  -handleDelete(args: String): void
+  -handleEdit(args: String): void
+}
+
+class TransactionsList {
+  -logger: Logger
+  -transactions: ArrayList<Transaction>
+  +TransactionsList()
+  +addTransaction(t: Transaction): void
+  +listTransactions(): void
+  +deleteTransaction(id: int): void
+  +clearTransactions(): void
+  +editTransaction(id: int, dateStr: String, desc: String, amount: Double, type: String, currency: String): void
+}
+
+class Transaction {
+  -nextId: int
+  -id: int
+  -date: LocalDate
+  -description: String
+  -amount: double
+  -type: TransactionType
+  -currency: String
+  +Transaction(dateStr: String, description: String, amount: Double, typeStr: String, currencyStr: String)
+  -parseDate(dateStr: String): LocalDate
+  +getId(): int
+  +update(dateStr: String, description: String, amount: Double, typeStr: String, currencyStr: String): void
+  +toString(): String
+}
+
+class TransactionType {
+  +value: String
+  +TransactionType(value: String)
+}
+
+class CurrencyValidator {
+  -APPROVED_CURRENCIES: List<String>
+  +validateAndGet(currency: String): String
+}
+
+Duke --> Parser : creates
+Duke --> TransactionsList : creates
+Parser --> TransactionsList : uses
+TransactionsList --> Transaction : contains
+Transaction --> TransactionType : has
+Transaction --> CurrencyValidator : uses
+
+note top of Duke
+  Main application class
+  Entry point for the program
+  Initializes components
+  Starts the input loop
+end note
+
+note top of Parser
+  Handles user input parsing
+  Validates command format
+  Delegates to TransactionsList
+  Provides error messages
+end note
+
+note top of TransactionsList
+  Manages collection of transactions
+  Provides CRUD operations
+  Auto-generates transaction IDs
+  Maintains data integrity
+end note
+
+note top of Transaction
+  Represents financial transaction
+  Auto-increments IDs
+  Validates data on creation
+  Provides update functionality
+end note
+
+note top of TransactionType
+  Enum-like structure
+  Validates debit/credit types
+  Ensures type consistency
+end note
+
+note top of CurrencyValidator
+  Static validation utility
+  Validates against approved list
+  Returns normalized currency code
+end note
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+
+actor User
+participant "Duke" as Duke
+participant "Parser" as Parser
+participant "TransactionsList" as TransactionsList
+participant "Transaction" as Transaction
+
+User -> Duke : enters "delete 1"
+Duke -> Parser : start()
+Parser -> Parser : processInput("delete 1")
+Parser -> Parser : handleDelete("1")
+
+Parser -> Parser : parse integer ID
+Parser -> TransactionsList : deleteTransaction(1)
+
+alt Transaction found
+    TransactionsList -> TransactionsList : transactions.removeIf(t -> t.getId() == 1)
+    TransactionsList --> Parser : true
+else Transaction not found
+    TransactionsList -> TransactionsList : transactions.removeIf returns false
+    TransactionsList --> Parser : throws IllegalArgumentException
+    Parser -> System.out : "Error: Transaction ID not found."
+    Parser --> Duke : returns
+    Duke --> User : displays error message
+end
+
+Parser -> System.out : "Transaction deleted successfully."
+Parser --> Duke : returns
+Duke --> User : displays success message
+
+note over TransactionsList
+  Uses removeIf with predicate
+  Checks each transaction's ID
+  Removes matching transaction
+  Verifies size decreased by 1
+end note
+
+note over Parser
+  ID validation:
+  1. Check if argument empty
+  2. Parse integer ID
+  3. Handle NumberFormatException
+end note
+@enduml

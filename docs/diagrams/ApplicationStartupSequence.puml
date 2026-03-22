@@ -1,0 +1,87 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+
+participant "JVM" as JVM
+participant "Main Class" as Main
+participant "Duke" as Duke
+participant "Scanner" as Scanner
+participant "Parser" as Parser
+participant "TransactionsList" as TransactionsList
+
+JVM -> Main : main(String[] args)
+Main -> Duke : main(String[] args)
+Duke -> Duke : Initialize logo
+Duke -> System.out : "Hello from\n" + logo
+
+Duke -> TransactionsList : new TransactionsList()
+TransactionsList -> TransactionsList : transactions = new ArrayList<>()
+TransactionsList -> Logger : log("TransactionsList initialized")
+TransactionsList --> Duke : returns TransactionsList instance
+
+Duke -> Parser : new Parser(transactionList)
+Parser -> Parser : this.list = list
+Parser -> Logger : log("Parser initialized")
+Parser --> Duke : returns Parser instance
+
+Duke -> Parser : start()
+Parser -> Scanner : new Scanner(System.in)
+
+loop while scanner.hasNextLine()
+    Parser -> Scanner : nextLine()
+    Scanner --> Parser : user input
+    
+    alt input equals "exit"
+        break loop
+    else input empty
+        Parser -> Parser : continue
+    else valid command
+        Parser -> Parser : processInput(input)
+        Parser -> Logger : log("Processing user input: " + input)
+        
+        alt command valid
+            Parser -> TransactionsList : appropriate operation
+            TransactionsList --> Parser : result
+            Parser -> System.out : success message
+        else command invalid
+            Parser -> System.out : error message
+        end
+    end
+end
+
+Parser -> Scanner : close()
+Parser --> Duke : returns
+Duke -> System.out : "--- Transaction Manager Exited ---"
+Duke --> Main : returns
+Main --> JVM : exits
+
+note over Duke
+  Application lifecycle:
+  1. Initialize components
+  2. Display welcome message
+  3. Start input loop
+  4. Handle user commands
+  5. Clean up on exit
+end note
+
+note over Parser,Scanner
+  Input handling:
+  1. Read user input
+  2. Validate commands
+  3. Parse arguments
+  4. Execute operations
+  5. Provide feedback
+end note
+
+note over TransactionsList
+  Data management:
+  1. Store transactions
+  2. Provide CRUD operations
+  3. Maintain data integrity
+  4. Log operations
+end note
+@enduml
