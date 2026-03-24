@@ -1,0 +1,29 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+actor User
+participant ":Parser" as Parser
+participant ":TransactionsList" as TransactionsList
+
+User -> Parser : processInput("delete 1")
+activate Parser
+
+Parser -> TransactionsList : deleteTransaction(1)
+activate TransactionsList
+
+TransactionsList -> TransactionsList : findById(1)
+activate TransactionsList
+TransactionsList --> TransactionsList : t
+deactivate TransactionsList
+
+TransactionsList -> TransactionsList : transactions.remove(t)
+TransactionsList --> Parser
+deactivate TransactionsList
+
+Parser --> User : "Transaction deleted successfully."
+deactivate Parser
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+actor User
+participant ":Parser" as Parser
+participant "t:Transaction" as Transaction
+participant ":TransactionsList" as TransactionsList
+
+User -> Parser : processInput("add -d 18/03/2026 -a 50 ...")
+activate Parser
+
+Parser -> Transaction ** : new Transaction(date, desc, amount, type, currency)
+
+Parser -> TransactionsList : addTransaction(t)
+activate TransactionsList
+TransactionsList --> Parser
+deactivate TransactionsList
+
+Parser --> User : "Transaction added successfully."
+deactivate Parser
+@enduml

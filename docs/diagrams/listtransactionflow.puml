@@ -1,0 +1,23 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam sequence {
+    ParticipantBackgroundColor #FFF
+    ActorBackgroundColor #FFF
+    LifeLineBackgroundColor #FFF
+}
+actor User
+participant ":Parser" as Parser
+participant ":TransactionsList" as TransactionsList
+
+User -> Parser : processInput("list")
+activate Parser
+
+Parser -> TransactionsList : listTransactions()
+activate TransactionsList
+
+TransactionsList --> Parser : (prints transactions to console)
+deactivate TransactionsList
+
+Parser --> User
+deactivate Parser
+@enduml

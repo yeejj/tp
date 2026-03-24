@@ -67,11 +67,6 @@ The Transaction, TransactionType, and CurrencyValidator classes form the data mo
 - **TransactionType**: Validates and stores transaction type (debit/credit)
 - **CurrencyValidator**: Validates currency codes against an approved list
 
-### Class Diagrams
-
-The following class diagram shows the relationships between all components:
-
-![Class Diagram](./diagrams/ClassDiagram.png)
 
 **Key Relationships**:
 - `Duke` aggregates `Parser` and `TransactionsList`
@@ -84,14 +79,54 @@ The following class diagram shows the relationships between all components:
 ## Implementation Details
 
 ### Transaction Flow
+Implementer: Pran
 
-CRUD
-Storage
-Transaction Data Model
+The transaction flow manages the lifecycle of user financial records from user input down to persistent storage.
 
-Design Decisions
+**CRUD Operations**
+*   **Create (Add):** The `Parser` extracts transaction arguments (date, description, amount, type, currency) and instantiates a `Transaction` object. The `TransactionsList` adds this object to its in-memory list and immediately triggers a save.
+![Class Diagram](./diagrams/addtransactionflow.png)
+*   **Read (List):** `TransactionsList` retrieves the list of transactions, sorts them chronologically by date, and displays them. It optionally collaborates with the `CurrencyConverter` to display amounts in a user-specified target currency without mutating the underlying data.
+![Class Diagram](./diagrams/listtransactionflow.png)
+*   **Update (Edit):** Users can modify specific fields of an existing transaction using its auto-incremented ID. `TransactionsList` retrieves the target transaction and updates only the provided fields.
+![Class Diagram](./diagrams/updatetransaction.png)
+*   **Delete/Clear:** Individual transactions are removed by ID, or the entire list is cleared via `TransactionsList`. Both operations immediately trigger a save to storage.
+![Class Diagram](./diagrams/deletetransactionflow.png)
 
-Alternatives Considered
+**Transaction Data Model**
+*   The `Transaction` class acts as the core entity. It contains an auto-incrementing integer ID, a `LocalDate` (enforced as DD/MM/YYYY), a description, a `double` amount, a `TransactionType` object, and a `String` currency.
+*   Validation is strictly enforced upon instantiation:
+    *   `TransactionType` restricts types to strictly "debit" or "credit".
+    *   `CurrencyValidator` restricts currencies to an approved list ("SGD", "USD", "EUR").
+
+---
+
+### Design Decisions
+*   **Fail-Fast Validation in Domain Entities:** Validation logic (e.g., checking for empty descriptions, valid date formats, valid currencies) is strictly enforced directly inside the `Transaction` constructor, `TransactionType`, and `CurrencyValidator`. 
+    *   *Rationale:* This ensures that a `Transaction` object can never exist in an invalid state in memory. If bad data is passed, it fails immediately before being added to the list.
+*   **Encapsulated Validation:** Validation logic for specific fields is separated into utility/wrapper classes (`TransactionType` and `CurrencyValidator`) rather than bloating the `Transaction` class itself.
+*   **Wrapper Classes for Constrained Values:** Instead of keeping the transaction type as a raw string, it is wrapped in a `TransactionType` struct-like class.
+    *   *Rationale:* It centralizes the string-matching logic (allowing case-insensitive checks for "debit" or "credit") and prevents typos from polluting the data model.
+---
+
+### Alternatives Considered
+**1. Input Parsing: Regex Flag Mapping vs. Fixed Position Arguments**
+*   **Alternative:** Require users to enter data in a strict order separated by a delimiter (e.g., `add 18/03/2026 | Office supplies | 45.50 | debit | SGD`).
+*   **Pros:** Much simpler to implement using a basic `String.split("\\|")`.
+*   **Cons:** Highly error-prone for the user. If they forget the order or miss a delimiter, the application will parse the wrong fields.
+*   **Decision:** The regex-based flag map (using `-desc`, etc.) was chosen to prioritize a flexible, forgiving user experience over implementation simplicity.
+
+**2. Transaction Identifiers: Auto-incrementing Integer vs UUID**
+*   **Alternative:** Assign a randomly generated UUID to each transaction instead of an auto-incrementing integer.
+*   **Pros:** Eliminates the need to track the `nextId` state across application restarts and prevents ID collisions when merging files.
+*   **Cons:** UUIDs are long, clunky, and highly inconvenient for users to type in a CLI environment when running `edit` or `delete` commands.
+*   **Decision:** Auto-incrementing integers were selected to provide a user-friendly, concise CLI experience.
+
+### Class Diagrams
+
+The following class diagram shows the relationships between all components:
+
+![Class Diagram](./diagrams/ClassDiagram.png)
 
 ### Currency Conversion Feature
 Implementer: JJ
