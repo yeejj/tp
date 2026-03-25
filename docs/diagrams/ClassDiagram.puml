@@ -18,6 +18,9 @@ class Parser {
   -converter: CurrencyConverter
   -exchangeRateStorage: ExchangeRateStorage
   -liveExchangeRateService: LiveExchangeRateService
+  -pendingTransactionId: Integer
+  -pendingTargetCurrency: String
+  -pendingFromListView: boolean
   +Parser(list: TransactionsList, converter: CurrencyConverter, exchangeRateStorage: ExchangeRateStorage, liveExchangeRateService: LiveExchangeRateService)
   +start(): void
   -processInput(input: String): void
@@ -30,6 +33,9 @@ class Parser {
   -handleConvertTransaction(args: String): void
   -handleRates(args: String): void
   -handleHelp(): void
+  -tryHandlePendingConfirmation(input: String): boolean
+  -confirmAndStoreConvertedTransaction(id: int, currency: String): void
+  -confirmAndStoreAllDisplayedTransactions(currency: String): void
 }
 
 class TransactionsList {

@@ -39,7 +39,8 @@ Parser --> Duke : returns
 Duke --> User : displays "Transaction 3: ..."
 
 note over CurrencyConverter
-  Conversion is display-only.
+  Conversion is view-only by default.
+  User may confirm to persist changes.
   Stored transaction values
   remain unchanged.
 end note

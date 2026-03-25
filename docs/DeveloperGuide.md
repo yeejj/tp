@@ -22,12 +22,13 @@ The following architecture diagram provides a high-level view of the Transaction
 The Transaction Manager follows a layered architecture with the following main components:
 
 1. **Main**: The entry point that initializes all components and starts the application loop.
-2. **Parser**: Handles user input parsing, command validation, and delegates operations to the TransactionsList.
+2. **Parser**: * Handles **multi-step commands with pending state (confirm workflow)**
+    - Maintains temporary state for confirmation-based workflows (e.g., currency conversion confirmation)
 3. **TransactionsList**: Manages the collection of Transaction objects and provides CRUD operations.
 4. **Transaction**: Represents individual financial transactions with validation and data integrity.
 5. **Validators**: Utility classes (CurrencyValidator, TransactionType) that enforce business rules.
 6. **Storage**: Handles persistence of transactions to local file storage.
-6. **Currency Services**: Handles currency conversion and exchange rate management.
+7. **Currency Services**: Handles currency conversion and exchange rate management.
     - `CurrencyConverter`
     - `ExchangeRateData`
     - `ExchangeRateStorage`
@@ -268,7 +269,6 @@ list transaction -to USD
 #### Design Considerations
 * **Separation of Concerns**: Conversion, storage, and API handling are modularized
 * **Persistence**: Exchange rates are stored locally to improve performance and reliability
-* **Non-destructive Operations**: All conversions are display-only
 * **Resilience**: Fallback data ensures continued functionality without API access
 
 #### Sequence Diagram
@@ -282,10 +282,80 @@ The diagram above illustrates how user input flows through the system:
 ---
 
 
+#### 6. Confirm and Store Converted Transactions
+This feature extends the currency conversion system by allowing users to **persist converted values into storage**, 
+instead of keeping them as view-only.
+Previously, all conversion operations (`convert`, `convert transaction`, `list transaction -to`) were strictly **non-destructive**.
+---
+
+#### Implementation Details
+This feature is implemented primarily in the `Parser` component through **stateful command handling**.
+
+New internal state variables in `Parser`:
+
+* `pendingTransactionId`: stores the transaction ID (for single conversion)
+* `pendingTargetCurrency`: stores the selected target currency
+* `pendingFromListView`: indicates whether the conversion came from list view
+---
+
+##### Workflow
+##### Case 1: `convert transaction`
+1. User runs:
+   ```
+   convert transaction 3 -to SGD
+   ```
+2. System:
+    * Calculates converted value
+    * Displays result
+    * Stores pending state (ID + currency)
+3. User enters:
+   ```
+   confirm
+   ```
+4. System:
+    * Calls `TransactionsList.editTransaction(...)`
+    * Updates:
+        * amount
+        * currency
+    * Persists changes via `Storage.save()`
+---
+
+##### Case 2: `list transaction -to`
+1. User runs:
+   ```
+   list transaction -to SGD
+   ```
+2. System:
+    * Displays converted values (view-only)
+    * Stores pending state (currency + list mode)
+3. User options:
+    * `confirm all` → update all transactions
+    * `confirm ID` → update one transaction
+4. System:
+    * Iterates through transactions (if all)
+    * Applies conversion
+    * Persists via `Storage`
+
+---
+
+#### Design Considerations
+* **Explicit Confirmation Required**
+    * Prevents accidental data mutation
+    * Maintains safety of original financial records
+* **Stateful Parser Design**
+    * Enables multi-step commands (view → confirm)
+    * Avoids modifying core model classes
+* **Reuse of Existing Logic**
+    * Uses `editTransaction()` instead of creating new update methods
+---
+
+#### Sequence Diagram
+![Confirm Transaction Sequence Diagram](diagrams/ConfirmTransactionSequence.png)
+
 ### [Proposed] Improved Account Validation and Hierarchical Account Registry
 Implementer: Pran
 
-### [Proposed] Date and Regex Filtering Enginer
+### [Proposed] Date and Regex Filtering Engineer
 Implementer: ??
 
 ### [Proposed] Transaction Presets and UI Improvements
