@@ -1,5 +1,6 @@
 package seedu.duke;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,8 @@ public class Parser {
     private boolean pendingFromListView = false;
 
     public Parser(TransactionsList list, CurrencyConverter converter,
-                  ExchangeRateStorage exchangeRateStorage,
-                  LiveExchangeRateService liveExchangeRateService) {
+            ExchangeRateStorage exchangeRateStorage,
+            LiveExchangeRateService liveExchangeRateService) {
         assert list != null : "Parser requires a valid TransactionsList instance.";
         assert converter != null : "Parser requires a valid CurrencyConverter instance.";
         assert exchangeRateStorage != null : "Parser requires a valid ExchangeRateStorage instance.";
@@ -137,8 +138,7 @@ public class Parser {
         double convertedAmount = converter.convert(
                 transaction.getAmount(),
                 transaction.getCurrency(),
-                targetCurrency
-        );
+                targetCurrency);
 
         list.editTransaction(id, null, null, convertedAmount, null, targetCurrency);
 
@@ -146,8 +146,7 @@ public class Parser {
                 "Transaction %d confirmed and stored as %.2f %s.%n",
                 id,
                 convertedAmount,
-                targetCurrency
-        );
+                targetCurrency);
     }
 
     private void confirmAndStoreAllDisplayedTransactions(String targetCurrency) {
@@ -163,8 +162,7 @@ public class Parser {
             double convertedAmount = converter.convert(
                     transaction.getAmount(),
                     transaction.getCurrency(),
-                    targetCurrency
-            );
+                    targetCurrency);
 
             list.editTransaction(
                     transaction.getId(),
@@ -172,16 +170,14 @@ public class Parser {
                     null,
                     convertedAmount,
                     null,
-                    targetCurrency
-            );
+                    targetCurrency);
             updatedCount++;
         }
 
         System.out.printf(
                 "All %d transactions have been confirmed and stored in %s.%n",
                 updatedCount,
-                targetCurrency
-        );
+                targetCurrency);
     }
 
     private void processInput(String input) {
@@ -198,84 +194,92 @@ public class Parser {
             }
         }
 
-        switch (command){
-        case "add":
-            handleAdd(arguments);
-            break;
-        case "list":
-            handleList(arguments);
-            break;
-        case "delete":
-            handleDelete(arguments);
-            break;
-        case "clear":
-            list.clearTransactions();
-            break;
-        case "edit":
-            handleEdit(arguments);
-            break;
-        case "convert":
-            handleConvert(arguments);
-            break;
-        case "rates":
-            handleRates(arguments);
-            break;
-        case "help":
-            handleHelp();
-            break;
-        default:
-            throw new IllegalArgumentException(
-                "Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.");
+        switch (command) {
+            case "add":
+                handleAdd(arguments);
+                break;
+            case "list":
+                handleList(arguments);
+                break;
+            case "delete":
+                handleDelete(arguments);
+                break;
+            case "clear":
+                list.clearTransactions();
+                break;
+            case "edit":
+                handleEdit(arguments);
+                break;
+            case "convert":
+                handleConvert(arguments);
+                break;
+            case "rates":
+                handleRates(arguments);
+                break;
+            case "help":
+                handleHelp();
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.");
         }
     }
 
-    private Map<String, String> parseArguments(String args) {
-        Map<String, String> map = new HashMap<>();
+    private Map<String, List<String>> parseArguments(String args) {
+        Map<String, List<String>> map = new HashMap<>();
+        // Your regex split is good; it looks for " -letter"
         String[] tokens = (" " + args).split("(?=\\s-[a-zA-Z])");
+
         for (String token : tokens) {
             token = token.trim();
+            if (token.isEmpty())
+                continue;
+
             if (token.startsWith("-")) {
                 int spaceIdx = token.indexOf(' ');
+                String key;
+                String value;
+
                 if (spaceIdx != -1) {
-                    String key = token.substring(0, spaceIdx).trim();
-                    String value = token.substring(spaceIdx + 1).trim();
-                    map.put(key, value);
+                    key = token.substring(0, spaceIdx).trim();
+                    value = token.substring(spaceIdx + 1).trim();
                 } else {
-                    map.put(token, "");
+                    key = token;
+                    value = "";
                 }
+
+                // computeIfAbsent creates a new list if the key doesn't exist yet
+                map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
             }
         }
         return map;
     }
 
+    private String getFirstElementFromMap(Map<String, List<String>> map, String s) {
+        return map.containsKey(s) ? map.get(s).get(0) : null;
+    }
+
     private void handleAdd(String args) {
-        Map<String, String> map = parseArguments(args);
-        String date = map.get("-d");
-        String desc = map.get("-desc");
-        String amountStr = map.get("-a");
-        String type = map.get("-t");
-        String currency = map.get("-c");
+        Map<String, List<String>> map = parseArguments(args);
+        String date = getFirstElementFromMap(map, "-d");
+        String desc = getFirstElementFromMap(map, "-desc");
+        List<String> postingStrings = map.get("-p");
+        String currency = getFirstElementFromMap(map, "-c");
+        // amount is integrated in the postingStrings
 
-        if (amountStr == null) {
-            throw new IllegalArgumentException("Missing amount.");
+        if (postingStrings == null) {
+            throw new IllegalArgumentException("Error: At least one posting (-p) is required.");
         }
 
-        double amount;
-        try {
-            amount = Double.parseDouble(amountStr);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Amount must be a valid number.");
-        }
-
-        Transaction t = new Transaction(date, desc, amount, type, currency);
+        Transaction t = new Transaction(date, desc, postingStrings, currency);
         list.addTransaction(t);
         System.out.println("Transaction added successfully.");
     }
 
     private void handleList(String args) {
         if (!args.isEmpty()) {
-            Map<String, String> map = parseArguments(args);
-            String to = map.get("-to");
+            Map<String, List<String>> map = parseArguments(args);
+            String to = getFirstElementFromMap(map, "-to");
             if (to != null) {
                 to = CurrencyValidator.validateAndGet(to);
                 list.setDisplayCurrency(to);
@@ -337,12 +341,12 @@ public class Parser {
             throw new IllegalArgumentException("No fields provided to edit.");
         }
 
-        Map<String, String> map = parseArguments(editArgs);
-        String date = map.get("-d");
-        String desc = map.get("-desc");
-        String amountStr = map.get("-a");
-        String type = map.get("-t");
-        String currency = map.get("-c");
+        Map<String, List<String>> map = parseArguments(editArgs);
+        String date = getFirstElementFromMap(map, "-d");
+        String desc = getFirstElementFromMap(map, "-desc");
+        String amountStr = getFirstElementFromMap(map, "-a");
+        String type = getFirstElementFromMap(map, "-t");
+        String currency = getFirstElementFromMap(map, "-c");
 
         Double amount = null;
         if (amountStr != null) {
@@ -363,11 +367,11 @@ public class Parser {
             return;
         }
 
-        Map<String, String> map = parseArguments(args);
+        Map<String, List<String>> map = parseArguments(args);
 
-        String amountStr = map.get("-a");
-        String from = map.get("-from");
-        String to = map.get("-to");
+        String amountStr = getFirstElementFromMap(map, "-a");
+        String from = getFirstElementFromMap(map, "-from");
+        String to = getFirstElementFromMap(map, "-to");
 
         if (amountStr == null || from == null || to == null) {
             throw new IllegalArgumentException("Missing arguments for convert.");
@@ -403,8 +407,8 @@ public class Parser {
         }
 
         String convertArgs = parts.length > 1 ? parts[1] : "";
-        Map<String, String> map = parseArguments(convertArgs);
-        String to = map.get("-to");
+        Map<String, List<String>> map = parseArguments(convertArgs);
+        String to = getFirstElementFromMap(map, "-to");
 
         if (to == null) {
             throw new IllegalArgumentException("Missing target currency.");
@@ -421,8 +425,7 @@ public class Parser {
                 transaction.getAmount(),
                 transaction.getCurrency(),
                 result,
-                to
-        );
+                to);
 
         pendingTransactionId = id;
         pendingTargetCurrency = to;

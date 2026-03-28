@@ -3,6 +3,8 @@ package seedu.duke;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a financial transaction containing an auto-incremented ID, date,
@@ -14,33 +16,15 @@ public class Transaction {
     private int id;
     private LocalDate date;
     private String description;
-    private double amount;
-    private TransactionType type;
     private String currency;
-
-    public Transaction(String dateStr, String description, Double amount, String typeStr, String currencyStr) {
-        if (dateStr == null || description == null || amount == null || typeStr == null || currencyStr == null) {
-            throw new IllegalArgumentException("Missing required transaction details.");
-        }
-        if (description.trim().isEmpty()) {
-            throw new IllegalArgumentException("Description cannot be empty.");
-        }
-
-        this.id = nextId++;
-        assert this.id > 0 : "Auto-incremented ID must be positive.";
-
-        this.date = parseDate(dateStr);
-        this.description = description;
-        this.amount = amount;
-        this.type = new TransactionType(typeStr);
-        this.currency = CurrencyValidator.validateAndGet(currencyStr);
-    }
+    private final List<Posting> postings = new ArrayList<>();
 
     /**
      * Constructor used when loading transactions from storage.
      */
-    private Transaction(int id, String dateStr, String description, Double amount, String typeStr, String currencyStr) {
-        if (dateStr == null || description == null || amount == null || typeStr == null || currencyStr == null) {
+    private Transaction(int id, String dateStr, String description, List<String> postingStrings, String currencyStr) {
+        // Centralized Validation
+        if (dateStr == null || description == null || postingStrings == null || currencyStr == null) {
             throw new IllegalArgumentException("Missing required transaction details.");
         }
         if (description.trim().isEmpty()) {
@@ -50,14 +34,53 @@ public class Transaction {
         this.id = id;
         this.date = parseDate(dateStr);
         this.description = description;
-        this.amount = amount;
-        this.type = new TransactionType(typeStr);
         this.currency = CurrencyValidator.validateAndGet(currencyStr);
+
+        // Centralized Posting Parsing
+        for (String pStr : postingStrings) {
+            String[] parts = pStr.split("\\s+");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("Invalid posting format. Use: -p \"Account Amount\"");
+            }
+            try {
+                double amount = Double.parseDouble(parts[1]);
+                addPosting(parts[0], amount);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Amount must be a valid number: " + parts[1]);
+            }
+        }
+    }
+
+    public Transaction(String dateStr, String description, List<String> postingStrings, String currencyStr) {
+        // Calls the Master Constructor above
+        this(nextId++, dateStr, description, postingStrings, currencyStr);
+
+        // Validation check for ID (post-increment)
+        assert this.id > 0 : "Auto-incremented ID must be positive.";
+    }
+
+    public void addPosting(String account, double amount) {
+        postings.add(new Posting(account, amount));
+    }
+
+    public boolean isBalanced() {
+        double sum = 0;
+        for (Posting p : postings) {
+            sum += p.getInternalAmount();
+            // Assets = Equity - Liabilities + (Income - Expenses)
+            // The value for Liabilities and Expenses are multiplied by -1 inside the
+            // .getInternalAmount logic
+        }
+        return Math.abs(sum) < 0.0001; // Avoid floating point precision issues
+    }
+
+    public List<Posting> getPostings() {
+        return postings;
     }
 
     public static Transaction fromStorage(int id, String dateStr, String description,
-                                          Double amount, String typeStr, String currencyStr) {
-        return new Transaction(id, dateStr, description, amount, typeStr, currencyStr);
+            List<String> postingStrings, String currencyStr) {
+        return new Transaction(id, dateStr, description, postingStrings, currencyStr);
     }
 
     public static void updateNextId(int nextIdValue) {
@@ -93,19 +116,11 @@ public class Transaction {
         return description;
     }
 
-    public double getAmount() {
-        return amount;
-    }
-
-    public String getType() {
-        return type.value;
-    }
-
     public String getCurrency() {
         return currency;
     }
 
-    public void update(String dateStr, String description, Double amount, String typeStr, String currencyStr) {
+    public void update(String dateStr, String description, List<String> postingStrings, String currencyStr) {
         if (dateStr != null) {
             this.date = parseDate(dateStr);
         }
@@ -115,12 +130,21 @@ public class Transaction {
             }
             this.description = description;
         }
-        if (amount != null) {
-            this.amount = amount;
+
+        postings.clear();
+        for (String pStr : postingStrings) {
+            String[] parts = pStr.split("\\s+");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("Invalid posting format. Use: -p \"Account Amount\"");
+            }
+            try {
+                double amount = Double.parseDouble(parts[1]);
+                addPosting(parts[0], amount);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Amount must be a valid number: " + parts[1]);
+            }
         }
-        if (typeStr != null) {
-            this.type = new TransactionType(typeStr);
-        }
+
         if (currencyStr != null) {
             this.currency = CurrencyValidator.validateAndGet(currencyStr);
         }
@@ -130,7 +154,21 @@ public class Transaction {
     @Override
     public String toString() {
         assert date != null : "Date should not be null when formatting.";
-        return String.format("ID: %d | Date: %s | Desc: %s | Amount: %.2f | Type: %s | Currency: %s",
-                id, getDateString(), description, amount, type.value, currency);
+
+        StringBuilder sb = new StringBuilder();
+
+        // Header Line: ID, Date, and Description
+        sb.append(String.format("ID: %d | Date: %s | Desc: %s | [%s]",
+                id, getDateString(), description, currency));
+
+        // Posting Lines: Indented for readability
+        for (Posting p : postings) {
+            sb.append("\n    "); // 4 spaces indentation
+            // %-30s aligns the account name to the left with a width of 30
+            // %10.2f aligns the number to the right
+            sb.append(String.format("%-30s : %10.2f", p.getAccountName(), p.getAmount()));
+        }
+
+        return sb.toString();
     }
 }

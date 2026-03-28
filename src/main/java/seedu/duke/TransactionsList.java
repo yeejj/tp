@@ -38,10 +38,26 @@ public class TransactionsList {
         this.autoConvertDisplay = autoConvertDisplay;
     }
 
-    public void addTransaction(Transaction transaction) {
-        logger.info("Adding transactions: " + transaction);
-        transactions.add(transaction);
-        save();
+    public void addTransaction(Transaction t) {
+        logger.info("Adding transactions: " + t);
+        if (t.isBalanced()) {
+            transactions.add(t);
+            save();
+        } else {
+            throw new IllegalArgumentException("Transaction is unbalanced!");
+        }
+    }
+
+    public double getAccountBalance(String accountName) {
+        double total = 0;
+        for (Transaction t : transactions) {
+            for (Posting p : t.getPostings()) {
+                if (p.getAccountName().startsWith(accountName)) {
+                    total += p.getAmount();
+                }
+            }
+        }
+        return total;
     }
 
     public void listTransactions() {
@@ -61,21 +77,22 @@ public class TransactionsList {
             return;
         }
 
-        double converted = converter.convert(
-                transaction.getAmount(),
-                transaction.getCurrency(),
-                displayCurrency
-        );
+        List<Posting> postings = transaction.getPostings();
 
-        if (transaction.getCurrency().equals(displayCurrency)) {
-            System.out.println(transaction);
-        } else {
-            System.out.printf(
-                    "%s | Display: %.2f %s%n",
-                    transaction,
-                    converted,
-                    displayCurrency
-            );
+        for (Posting posting : postings) {
+            double converted = converter.convert(
+                    posting.getAmount(),
+                    transaction.getCurrency(),
+                    displayCurrency);
+            if (transaction.getCurrency().equals(displayCurrency)) {
+                System.out.println(transaction);
+            } else {
+                System.out.printf(
+                        "%s | Display: %.2f %s%n",
+                        transaction,
+                        converted,
+                        displayCurrency);
+            }
         }
     }
 
@@ -93,10 +110,10 @@ public class TransactionsList {
         System.out.println("All transactions have been cleared.");
     }
 
-    public void editTransaction(int id, String date, String desc, Double amount, String type, String currency) {
+    public void editTransaction(int id, String date, String desc, List<String> postingStrings, String currency) {
         logger.info("Editing transactions with ID: " + id);
         Transaction transaction = findById(id);
-        transaction.update(date, desc, amount, type, currency);
+        transaction.update(date, desc, postingStrings, currency);
         save();
     }
 
