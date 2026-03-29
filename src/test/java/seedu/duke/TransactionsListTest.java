@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +22,19 @@ public class TransactionsListTest {
 
     private TransactionsList list;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+    private Transaction createTransaction(String date, String description,
+            double amount, String type, String currency) {
+        List<Posting> postings = new ArrayList<>();
+        if (type.equals("debit")) {
+            postings.add(new Posting("Expenses:General", amount));
+            postings.add(new Posting("Assets:Cash", -amount)); // Credit balancing entry
+        } else {
+            postings.add(new Posting("Assets:Cash", amount));
+            postings.add(new Posting("Expenses:General", -amount)); // Debit balancing entry
+        }
+        return new Transaction(date, description, postings, currency);
+    }
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +67,7 @@ public class TransactionsListTest {
 
     @Test
     public void testAddAndListTransactions() {
-        Transaction t = new Transaction("15/03/2023", "Salary", 5000.0, "debit", "USD");
+        Transaction t = createTransaction("15/03/2023", "Salary", 5000.0, "debit", "USD");
         list.addTransaction(t);
 
         outputStreamCaptor.reset();
@@ -65,7 +80,7 @@ public class TransactionsListTest {
 
     @Test
     public void testDeleteTransactionSuccess() {
-        Transaction t = new Transaction("15/03/2023", "Salary", 5000.0, "debit", "USD");
+        Transaction t = createTransaction("15/03/2023", "Salary", 5000.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
@@ -86,11 +101,14 @@ public class TransactionsListTest {
 
     @Test
     public void testEditTransactionSuccess() {
-        Transaction t = new Transaction("15/03/2023", "Rent", 1000.0, "debit", "USD");
+        Transaction t = createTransaction("15/03/2023", "Rent", 1000.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
-        list.editTransaction(id, null, null, 1200.0, null, null);
+        List<Posting> newPostings = new ArrayList<>();
+        newPostings.add(new Posting("Expenses:General", 1200.0));
+        newPostings.add(new Posting("Assets:Cash", -1200.0)); // Credit balancing entry
+        list.editTransaction(id, null, null, newPostings, null);
 
         outputStreamCaptor.reset();
         list.listTransactions();
@@ -100,8 +118,8 @@ public class TransactionsListTest {
 
     @Test
     public void testClearTransactions() {
-        list.addTransaction(new Transaction("15/03/2023", "A", 10.0, "debit", "USD"));
-        list.addTransaction(new Transaction("16/03/2023", "B", 20.0, "debit", "USD"));
+        list.addTransaction(createTransaction("15/03/2023", "A", 10.0, "debit", "USD"));
+        list.addTransaction(createTransaction("16/03/2023", "B", 20.0, "debit", "USD"));
 
         outputStreamCaptor.reset();
         list.clearTransactions();

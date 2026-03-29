@@ -9,7 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +30,19 @@ public class ParserTest {
     private LiveExchangeRateService liveExchangeRateService;
 
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+    private Transaction createTransaction(String date, String description,
+            double amount, String type, String currency) {
+        List<Posting> postings = new ArrayList<>();
+        if (type.equals("debit")) {
+            postings.add(new Posting("Expenses:General", amount));
+            postings.add(new Posting("Assets:Cash", -amount)); // Credit balancing entry
+        } else {
+            postings.add(new Posting("Assets:Cash", amount));
+            postings.add(new Posting("Expenses:General", -amount)); // Debit balancing entry
+        }
+        return new Transaction(date, description, postings, currency);
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -81,7 +96,8 @@ public class ParserTest {
 
     @Test
     public void testAddCommandSuccess() {
-        String input = "add transaction -d 15/03/2023 -desc Lunch -a 15.5 -t debit -c SGD\nexit";
+        String input = "add transaction -d 15/03/2023 -desc Lunch -p " +
+                "\"Expenses 15.5\" -p \"Assets -15.5\" -c SGD\nexit";
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
@@ -93,16 +109,8 @@ public class ParserTest {
     }
 
     @Test
-    public void testAddCommandMissingAmount() {
-        String input = "add transaction -d 15/03/2023 -desc Lunch -t debit -c SGD\nexit";
-        runParserWithInput(input);
-
-        assertTrue(outputStreamCaptor.toString().contains("Error: Missing amount."));
-    }
-
-    @Test
     public void testListCommand() {
-        list.addTransaction(new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
+        list.addTransaction(createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
 
         outputStreamCaptor.reset();
         String input = "list transaction\nexit";
@@ -113,7 +121,7 @@ public class ParserTest {
 
     @Test
     public void testDeleteCommand() {
-        Transaction t = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
@@ -126,23 +134,22 @@ public class ParserTest {
 
     @Test
     public void testEditCommand() {
-        Transaction t = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
         outputStreamCaptor.reset();
-        String input = "edit transaction " + id + " -desc Tea -a 6.0\nlist\nexit";
+        String input = "edit transaction " + id + " -desc Tea\nlist\nexit";
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("Transaction edited successfully."));
         assertTrue(output.contains("Tea"));
-        assertTrue(output.contains("6.00"));
     }
 
     @Test
     public void testClearCommand() {
-        list.addTransaction(new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
+        list.addTransaction(createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
 
         outputStreamCaptor.reset();
         String input = "clear transaction\nlist\nexit";

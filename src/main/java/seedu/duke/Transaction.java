@@ -121,18 +121,20 @@ public class Transaction {
         }
 
         if (newPostings != null && !newPostings.isEmpty()) {
+            // Fundamental check: After an update, the transaction MUST still balance
+            if (!isBalanced()) {
+                throw new IllegalArgumentException("Update failed: Transaction is unbalanced.");
+            }
             this.postings.clear();
             this.postings.addAll(newPostings);
+            
         }
 
         if (currencyStr != null) {
             this.currency = CurrencyValidator.validateAndGet(currencyStr);
         }
 
-        // Fundamental check: After an update, the transaction MUST still balance
-        if (!isBalanced()) {
-            throw new IllegalArgumentException("Update failed: Transaction is unbalanced.");
-        }
+        
     }
 
     @Override

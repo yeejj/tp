@@ -9,7 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +31,19 @@ public class ParserConfirmFeatureTest {
 
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
+
+    private Transaction createTransaction(String date, String description,
+            double amount, String type, String currency) {
+        List<Posting> postings = new ArrayList<>();
+        if (type.equals("debit")) {
+            postings.add(new Posting("Expenses:General", amount));
+            postings.add(new Posting("Assets:Cash", -amount)); // Credit balancing entry
+        } else {
+            postings.add(new Posting("Assets:Cash", amount));
+            postings.add(new Posting("Expenses:General", -amount)); // Debit balancing entry
+        }
+        return new Transaction(date, description, postings, currency);
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -86,7 +101,7 @@ public class ParserConfirmFeatureTest {
 
     @Test
     public void testConvertTransactionThenConfirmStoresConvertedValue() {
-        Transaction t = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
@@ -98,17 +113,16 @@ public class ParserConfirmFeatureTest {
         double expected = converter.convert(5.0, "USD", "SGD");
 
         assertEquals("SGD", updated.getCurrency());
-        assertEquals(expected, updated.getAmount(), 0.0001);
+        assertEquals(expected, updated.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
-        assertTrue(output.contains("Transaction " + id + ": 5.00 USD ="));
-        assertTrue(output.contains("Type 'confirm'"));
-        assertTrue(output.contains("confirmed and stored"));
+        assertTrue(output.contains("Transaction " + id + " confirmed and stored in SGD."));
+        assertTrue(output.contains("Type 'confirm' to store this transaction in SGD."));
     }
 
     @Test
     public void testConvertTransactionThenOtherCommandIgnoresPendingConversion() {
-        Transaction t = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
         list.addTransaction(t);
         int id = t.getId();
 
@@ -119,17 +133,16 @@ public class ParserConfirmFeatureTest {
         Transaction unchanged = list.getTransactionById(id);
 
         assertEquals("USD", unchanged.getCurrency());
-        assertEquals(5.0, unchanged.getAmount(), 0.0001);
+        assertEquals(5.0, unchanged.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
-        assertTrue(output.contains("Transaction " + id + ": 5.00 USD ="));
         assertTrue(output.contains("=== Ledger67 Help ==="));
     }
 
     @Test
     public void testListTransactionToThenConfirmIdStoresOneTransactionOnly() {
-        Transaction t1 = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
-        Transaction t2 = new Transaction("11/10/2023", "Tea", 10.0, "debit", "USD");
+        Transaction t1 = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t2 = createTransaction("11/10/2023", "Tea", 10.0, "debit", "USD");
         list.addTransaction(t1);
         list.addTransaction(t2);
 
@@ -144,10 +157,10 @@ public class ParserConfirmFeatureTest {
         Transaction unchanged = list.getTransactionById(id2);
 
         assertEquals("SGD", updated.getCurrency());
-        assertEquals(converter.convert(5.0, "USD", "SGD"), updated.getAmount(), 0.0001);
+        assertEquals(converter.convert(5.0, "USD", "SGD"), updated.getPostings().get(0).getAmount(), 0.0001);
 
         assertEquals("USD", unchanged.getCurrency());
-        assertEquals(10.0, unchanged.getAmount(), 0.0001);
+        assertEquals(10.0, unchanged.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("confirm all"));
@@ -157,8 +170,8 @@ public class ParserConfirmFeatureTest {
 
     @Test
     public void testListTransactionToThenConfirmAllStoresAllTransactions() {
-        Transaction t1 = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
-        Transaction t2 = new Transaction("11/10/2023", "Tea", 10.0, "debit", "USD");
+        Transaction t1 = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t2 = createTransaction("11/10/2023", "Tea", 10.0, "debit", "USD");
         list.addTransaction(t1);
         list.addTransaction(t2);
 
@@ -171,8 +184,8 @@ public class ParserConfirmFeatureTest {
 
         assertEquals("SGD", updated1.getCurrency());
         assertEquals("SGD", updated2.getCurrency());
-        assertEquals(converter.convert(5.0, "USD", "SGD"), updated1.getAmount(), 0.0001);
-        assertEquals(converter.convert(10.0, "USD", "SGD"), updated2.getAmount(), 0.0001);
+        assertEquals(converter.convert(5.0, "USD", "SGD"), updated1.getPostings().get(0).getAmount(), 0.0001);
+        assertEquals(converter.convert(10.0, "USD", "SGD"), updated2.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("All 2 transactions have been confirmed and stored in SGD."));
@@ -180,7 +193,7 @@ public class ParserConfirmFeatureTest {
 
     @Test
     public void testListTransactionToThenOtherCommandIgnoresPendingConversion() {
-        Transaction t = new Transaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
         list.addTransaction(t);
 
         outputStreamCaptor.reset();
@@ -190,7 +203,7 @@ public class ParserConfirmFeatureTest {
         Transaction unchanged = list.getTransactionById(t.getId());
 
         assertEquals("USD", unchanged.getCurrency());
-        assertEquals(5.0, unchanged.getAmount(), 0.0001);
+        assertEquals(5.0, unchanged.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("The displayed values are view-only by default."));

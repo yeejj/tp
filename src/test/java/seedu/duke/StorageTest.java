@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,19 @@ import java.util.List;
  */
 public class StorageTest {
     private static final String TEST_FILE_PATH = "data/storage-test-ledger.txt";
+
+    private Transaction createTransaction(String date, String description,
+            double amount, String type, String currency) {
+        List<Posting> postings = new ArrayList<>();
+        if (type.equals("debit")) {
+            postings.add(new Posting("Expenses:General", amount));
+            postings.add(new Posting("Assets:Cash", -amount)); // Credit balancing entry
+        } else {
+            postings.add(new Posting("Assets:Cash", amount));
+            postings.add(new Posting("Expenses:General", -amount)); // Debit balancing entry
+        }
+        return new Transaction(date, description, postings, currency);
+    }
 
     @AfterEach
     public void tearDown() {
@@ -35,8 +49,8 @@ public class StorageTest {
     public void testSaveAndLoadTransactions() {
         Storage storage = new Storage(TEST_FILE_PATH);
 
-        Transaction t1 = new Transaction("15/03/2023", "Groceries", 50.0, "debit", "USD");
-        Transaction t2 = new Transaction("16/03/2023", "Salary", 1000.0, "credit", "SGD");
+        Transaction t1 = createTransaction("15/03/2023", "Groceries", 50.0, "debit", "USD");
+        Transaction t2 = createTransaction("16/03/2023", "Salary", 1000.0, "credit", "SGD");
 
         storage.save(List.of(t1, t2));
 
@@ -51,7 +65,7 @@ public class StorageTest {
     public void testSaveAndLoadPreservesTransactionDetails() {
         Storage storage = new Storage(TEST_FILE_PATH);
 
-        Transaction t = new Transaction("20/03/2023", "Book Purchase", 25.75, "debit", "EUR");
+        Transaction t = createTransaction("20/03/2023", "Book Purchase", 25.75, "debit", "EUR");
         storage.save(List.of(t));
 
         List<Transaction> loadedList = storage.load();
@@ -61,8 +75,7 @@ public class StorageTest {
 
         Assertions.assertEquals("20/03/2023", loaded.getDateString());
         Assertions.assertEquals("Book Purchase", loaded.getDescription());
-        Assertions.assertEquals(25.75, loaded.getAmount(), 0.0001);
-        Assertions.assertEquals("debit", loaded.getType());
+        Assertions.assertEquals(25.75, loaded.getPostings().get(0).getAmount(), 0.0001);
         Assertions.assertEquals("EUR", loaded.getCurrency());
     }
 
@@ -81,8 +94,11 @@ public class StorageTest {
     public void testSaveAndLoadUpdatedConvertedTransaction() {
         Storage storage = new Storage(TEST_FILE_PATH);
 
-        Transaction t = new Transaction("20/03/2023", "Book Purchase", 25.75, "debit", "USD");
-        t.update(null, null, 34.50, null, "SGD");
+        Transaction t = createTransaction("20/03/2023", "Book Purchase", 25.75, "debit", "USD");
+        List<Posting> newPostings = new ArrayList<>();
+        newPostings.add(new Posting("Expenses:General", 34.50));
+        newPostings.add(new Posting("Assets:Cash", -34.50)); // Credit balancing entry
+        t.update(null, null, newPostings, "SGD");
 
         storage.save(List.of(t));
         List<Transaction> loadedList = storage.load();
@@ -90,7 +106,7 @@ public class StorageTest {
         Assertions.assertEquals(1, loadedList.size());
         Transaction loaded = loadedList.get(0);
 
-        Assertions.assertEquals(34.50, loaded.getAmount(), 0.0001);
+        Assertions.assertEquals(34.50, loaded.getPostings().get(0).getAmount(), 0.0001);
         Assertions.assertEquals("SGD", loaded.getCurrency());
         Assertions.assertEquals("Book Purchase", loaded.getDescription());
     }

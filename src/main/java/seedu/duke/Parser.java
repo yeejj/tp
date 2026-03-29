@@ -328,7 +328,7 @@ public class Parser {
         }
 
         clearPendingConfirmation();
-        
+
     }
 
     private void handleDelete(String args) {
@@ -368,10 +368,12 @@ public class Parser {
         List<String> postingStrings = map.get("-p");
         String currency = getFirstElementFromMap(map, "-c");
 
+        List<Posting> postings;
         if (postingStrings == null) {
-            throw new IllegalArgumentException("Error: At least one posting (-p) is required.");
+            postings = null;
+        } else {
+            postings = convertStringList2PostingList(postingStrings);
         }
-        List<Posting> postings = convertStringList2PostingList(postingStrings);
         list.editTransaction(id, date, desc, postings, currency);
         System.out.println("Transaction edited successfully.");
     }
@@ -473,7 +475,8 @@ public class Parser {
         System.out.println("   Format: add -d DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY");
         System.out.println("   ASSETS = EQUITY - LIABILITIES + (INCOME - EXPENSES)");
         System.out.println("   Each transaction must be balanced. This is checked by the system automatically.");
-        System.out.println("   Example: add -d 18/03/2026 -desc Office supplies -p \"Assets -45.50\" -p \"Expenses 45.50\" -c SGD");
+        System.out.println("   Example: add -d 18/03/2026 -desc Office supplies -p " +
+                "\"Assets -45.50\" -p \"Expenses 45.50\" -c SGD");
         System.out.println();
 
         System.out.println("2. list - Display all transactions");
