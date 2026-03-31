@@ -18,71 +18,84 @@ Available commands:
    Format: add -d DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY
    ASSETS = EQUITY - LIABILITIES + (INCOME - EXPENSES)
    Each transaction must be balanced. This is checked by the system automatically.
-   Example: add -d 18/03/2026 -desc Office supplies -p "Assets -45.50" -p "Expenses 45.50" -c SGD
+   Postings support hierarchical account names using ':'
+   Examples: Assets:Cash, Assets:Bank:DBS, Expenses:Food, Income:Salary
+   Example: add -d 18/03/2026 -desc Office supplies -p "Assets:Cash -45.50" -p "Expenses:OfficeSupplies 45.50" -c SGD
 
 2. list - Display all transactions
    Format: list
-   Optional: list transaction -to CURRENCY
-   Example: list transaction -to USD
+   Optional A: list -to CURRENCY
+   Optional B: list -acc ACCOUNT
+   Optional C: list -acc ACCOUNT -to CURRENCY
+   Example: list -acc Assets
+   Example: list -acc Assets:Bank -to USD
 
-3. list transaction -to CURRENCY - Display transactions with converted view values
-   Format: list transaction -to CURRENCY
-   Example: list transaction -to USD
+3. list -acc ACCOUNT - Filter transactions by hierarchical account
+   Format: list -acc ACCOUNT
+   Example: list -acc Expenses
+   Example: list -acc Assets:Bank
+   Only postings under the given account category will be shown.
+
+4. list -to CURRENCY - Display transactions with converted view values
+   Format: list -to CURRENCY
+   Example: list -to USD
    By default, this is a view-only feature.
    To store all displayed conversions, use: confirm all
    To store one displayed conversion, use: confirm ID
    Example: confirm 3
 
-4. edit - Modify an existing transaction
+5. edit - Modify an existing transaction
    Format: edit ID [-d DATE] [-desc DESC] [-p POSTING] [-c CURRENCY]
-   Example: edit 1 -desc Updated description -a 50.00
+   Example: edit 1 -desc Updated description -p "Expenses:Food 50" -p "Assets:Cash -50"
 
-5. delete - Remove a transaction
+6. delete - Remove a transaction
    Format: delete ID
    Example: delete 3
 
-6. clear - Remove all transactions
+7. clear - Remove all transactions
    Format: clear
 
-7. convert - Convert currencies
+8. convert - Convert currencies
    Format: convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY
    Example: convert -a 100 -from USD -to SGD
    Note: This is a view-mode feature only. It does NOT create or store a transaction.
 
-8. convert transaction - Convert an existing transaction
+9. convert transaction - Convert an existing transaction
    Format: convert transaction ID -to TARGET_CURRENCY
    Example: convert transaction 3 -to SGD
    By default, this is a view-mode feature only & won't modify the stored transaction.
    To store the converted transaction, type: confirm
 
-9. confirm - Store viewed converted transaction(s)
+10. confirm - Store viewed converted transaction(s)
    After convert transaction ...
    Format: confirm
 
-   After list transaction -to ...
+   After list -to ...
    Format A: confirm all
    Format B: confirm ID
    Example: confirm all
    Example: confirm 3
 
-10. rates - Refresh live exchange rates
+11. rates - Refresh live exchange rates
     Format: rates refresh
 
-11. help - Show this help message
+12. help - Show this help message
     Format: help
 
-12. exit - Exit the application
+13. exit - Exit the application
     Format: exit
 
 === Additional Information ===
 - DATE format: DD/MM/YYYY (e.g., 18/03/2026)
-- TYPE must be either 'debit' or 'credit'
 - CURRENCY must be one of: SGD, USD, EUR
 - ID is shown when using the 'list' command
 - Transactions are stored locally on your machine
 - Exchange rates are loaded from exchange-rates.json
 - Converted values are view-only unless confirmed
 - Any command other than confirm will ignore the pending conversion
+- Account names may be hierarchical using ':'
+- Example account names: Assets:Cash, Assets:Bank:DBS, Expenses:Food
+- Valid root account types are: Assets, Liabilities, Equity, Income, Expenses
 
 For detailed documentation, please refer to the User Guide.
 Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
@@ -90,43 +103,65 @@ Error: Error: At least one posting (-p) is required.
 Error: Error: At least one posting (-p) is required.
 Error: Invalid posting format. Use: -p "Account Amount"
 Error: Amount must be a valid number.
-Error: Transaction is unbalanced!
 Transaction added successfully.
 Transaction added successfully.
-Error: Transaction is unbalanced!
+Transaction added successfully.
+Transaction added successfully.
+ID: 1 | Date: 18/03/2026 | Desc: Transaction 1 | [SGD]
+    Assets:Cash                    :     100.00
+    Equity:Capital                 :     100.00
 ID: 2 | Date: 19/03/2026 | Desc: Transaction 2 | [SGD]
-    Expenses                       :      50.00
-    Assets                         :     -50.00
+    Expenses:General               :      50.00
+    Assets:Cash                    :     -50.00
 ID: 3 | Date: 20/03/2026 | Desc: Transaction 3 | [USD]
-    Bank Account                   :     200.00
-    Sales                          :    -200.00
+    Assets:Bank:Main               :     200.00
+    Income:Sales                   :     200.00
+ID: 4 | Date: 21/03/2026 | Desc: Transaction 4 | [EUR]
+    Assets:Cash                    :     300.00
+    Equity:Capital                 :     300.00
 Error: Missing arguments for convert.
 Error: Amount must be a valid number.
 100.00 SGD = 74.66 USD
 Error: Missing arguments for convert.
 Error: Transaction ID must be an integer.
 Error: Missing target currency.
-Error: Transaction ID not found.
-Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
-Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
-  Expenses                       :      50.00 SGD =      34.25 EUR
-  Assets                         :     -50.00 SGD =     -34.25 EUR
+  Assets:Cash                    :     100.00 SGD =      74.66 USD
+  Equity:Capital                 :     100.00 SGD =      74.66 USD
+This converted value is view-only by default.
+Type 'confirm' to store this transaction in USD.
+Enter any other command to ignore.
+Error: After 'convert transaction', use only 'confirm' to store the viewed transaction.
+Transaction 1 confirmed and stored in USD.
+  Expenses:General               :      50.00 SGD =      34.25 EUR
+  Assets:Cash                    :     -50.00 SGD =     -34.25 EUR
 This converted value is view-only by default.
 Type 'confirm' to store this transaction in EUR.
 Enter any other command to ignore.
+ID: 1 | Date: 18/03/2026 | Desc: Transaction 1 | [USD]
+    Assets:Cash                    :      74.66
+    Equity:Capital                 :      74.66
 ID: 2 | Date: 19/03/2026 | Desc: Transaction 2 | [SGD]
-    Expenses                       :      50.00
-    Assets                         :     -50.00
+    Expenses:General               :      50.00
+    Assets:Cash                    :     -50.00
 ID: 3 | Date: 20/03/2026 | Desc: Transaction 3 | [USD]
-    Bank Account                   :     200.00
-    Sales                          :    -200.00
+    Assets:Bank:Main               :     200.00
+    Income:Sales                   :     200.00
+ID: 4 | Date: 21/03/2026 | Desc: Transaction 4 | [EUR]
+    Assets:Cash                    :     300.00
+    Equity:Capital                 :     300.00
 Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
-ID: 2 | Date: 2026-03-19 | Desc: Transaction 2 | [SGD -> EUR]
-    Expenses                       :      50.00 | Display: 34.25 EUR
-    Assets                         :     -50.00 | Display: -34.25 EUR
-ID: 3 | Date: 2026-03-20 | Desc: Transaction 3 | [USD -> EUR]
-    Bank Account                   :     200.00 | Display: 183.49 EUR
-    Sales                          :    -200.00 | Display: -183.49 EUR
+ID: 1 | Date: 18/03/2026 | Desc: Transaction 1 | [USD -> EUR]
+    Assets:Cash                    :      74.66 | Display: 68.49 EUR
+    Equity:Capital                 :      74.66 | Display: 68.49 EUR
+ID: 2 | Date: 19/03/2026 | Desc: Transaction 2 | [SGD -> EUR]
+    Expenses:General               :      50.00 | Display: 34.25 EUR
+    Assets:Cash                    :     -50.00 | Display: -34.25 EUR
+ID: 3 | Date: 20/03/2026 | Desc: Transaction 3 | [USD -> EUR]
+    Assets:Bank:Main               :     200.00 | Display: 183.49 EUR
+    Income:Sales                   :     200.00 | Display: 183.49 EUR
+ID: 4 | Date: 21/03/2026 | Desc: Transaction 4 | [EUR -> EUR]
+    Assets:Cash                    :     300.00 | Display: 300.00 EUR
+    Equity:Capital                 :     300.00 | Display: 300.00 EUR
 
 The displayed values are view-only by default.
 Type 'confirm all' to store ALL transactions in EUR.
@@ -136,32 +171,40 @@ Enter any other command to ignore.
 Error: After 'list transaction -to ...', use 'confirm all' or 'confirm ID'.
 Error: Transaction ID for confirm must be an integer.
 Transaction 2 confirmed and stored in EUR.
-ID: 2 | Date: 2026-03-19 | Desc: Transaction 2 | [EUR -> USD]
-    Expenses                       :      34.25 | Display: 37.33 USD
-    Assets                         :     -34.25 | Display: -37.33 USD
-ID: 3 | Date: 2026-03-20 | Desc: Transaction 3 | [USD -> USD]
-    Bank Account                   :     200.00 | Display: 200.00 USD
-    Sales                          :    -200.00 | Display: -200.00 USD
+ID: 1 | Date: 18/03/2026 | Desc: Transaction 1 | [USD -> USD]
+    Assets:Cash                    :      74.66 | Display: 74.66 USD
+    Equity:Capital                 :      74.66 | Display: 74.66 USD
+ID: 2 | Date: 19/03/2026 | Desc: Transaction 2 | [EUR -> USD]
+    Expenses:General               :      34.25 | Display: 37.33 USD
+    Assets:Cash                    :     -34.25 | Display: -37.33 USD
+ID: 3 | Date: 20/03/2026 | Desc: Transaction 3 | [USD -> USD]
+    Assets:Bank:Main               :     200.00 | Display: 200.00 USD
+    Income:Sales                   :     200.00 | Display: 200.00 USD
+ID: 4 | Date: 21/03/2026 | Desc: Transaction 4 | [EUR -> USD]
+    Assets:Cash                    :     300.00 | Display: 327.00 USD
+    Equity:Capital                 :     300.00 | Display: 327.00 USD
 
 The displayed values are view-only by default.
 Type 'confirm all' to store ALL transactions in USD.
 Type 'confirm ID' to store one displayed transaction in USD.
 Example: confirm 3
 Enter any other command to ignore.
+Transaction 1 confirmed and stored in USD.
 Transaction 2 confirmed and stored in USD.
 Transaction 3 confirmed and stored in USD.
-All 2 transactions have been confirmed and stored in USD.
+Transaction 4 confirmed and stored in USD.
+All 4 transactions have been confirmed and stored in USD.
 Error: Missing transaction ID to edit.
 Error: Transaction ID must be an integer.
 Error: No fields provided to edit.
 Error: Invalid posting format. Use: -p "Account Amount"
-Error: Transaction ID not found.
+Transaction edited successfully.
 Error: Missing transaction ID to delete.
 Error: Transaction ID must be an integer.
-Error: Transaction ID not found.
-Exchange rates refreshed successfully for 2026-03-30.
+Transaction deleted successfully.
+Exchange rates refreshed successfully for 2026-03-31.
 Error: Unknown rates command. Use: rates refresh
-Exchange rates refreshed successfully for 2026-03-30.
+Exchange rates refreshed successfully for 2026-03-31.
 All transactions have been cleared.
 No transactions found.
 --- Transaction Manager Exited ---

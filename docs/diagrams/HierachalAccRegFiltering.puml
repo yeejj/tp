@@ -1,0 +1,36 @@
+```puml
+@startuml
+actor User
+
+participant Parser
+participant TransactionsList
+participant Transaction
+participant Posting
+participant Account
+
+User -> Parser : "list -acc Assets"
+Parser -> Parser : parse command\nextract accountFilter
+
+Parser -> TransactionsList : listTransactionsByAccount("Assets")
+
+TransactionsList -> TransactionsList : iterate transactions
+
+loop for each Transaction
+    TransactionsList -> Transaction : getPostings()
+
+    loop for each Posting
+        Transaction -> Posting : getAccount()
+
+        Posting -> Account : isUnder("Assets")
+
+        Account --> Posting : true / false
+    end
+
+    alt match found
+        TransactionsList -> TransactionsList : print transaction
+    end
+end
+
+TransactionsList --> Parser : output
+Parser --> User : display results
+@enduml

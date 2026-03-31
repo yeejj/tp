@@ -24,7 +24,7 @@ public class TransactionsListTest {
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
     private Transaction createTransaction(String date, String description,
-            double amount, String type, String currency) {
+                                          double amount, String type, String currency) {
         List<Posting> postings = new ArrayList<>();
         if (type.equals("debit")) {
             postings.add(new Posting("Expenses:General", amount));
@@ -129,4 +129,41 @@ public class TransactionsListTest {
         Assertions.assertTrue(output.contains("All transactions have been cleared."));
         Assertions.assertTrue(output.contains("No transactions found."));
     }
+
+    @Test
+    public void testListTransactionsByAccountFiltering() {
+        Transaction t1 = createTransaction("10/10/2023", "Lunch", 10.0, "debit", "USD");
+        Transaction t2 = createTransaction("11/10/2023", "Salary", 1000.0, "credit", "USD");
+
+        List<Posting> postings1 = new ArrayList<>();
+        postings1.add(new Posting("Expenses:Food", 10.0));
+        postings1.add(new Posting("Assets:Cash", -10.0));
+
+        List<Posting> postings2 = new ArrayList<>();
+        postings2.add(new Posting("Assets:Bank:DBS", 1000.0));
+        postings2.add(new Posting("Income:Salary", 1000.0));
+
+        t1.update(null, null, postings1, null);
+        t2.update(null, null, postings2, null);
+
+        list.addTransaction(t1);
+        list.addTransaction(t2);
+
+        outputStreamCaptor.reset();
+        list.listTransactionsByAccount("Assets");
+
+        String output = outputStreamCaptor.toString();
+
+        Assertions.assertTrue(output.contains("Assets:Cash"));
+        Assertions.assertTrue(output.contains("Assets:Bank:DBS"));
+
+        outputStreamCaptor.reset();
+        list.listTransactionsByAccount("Assets:Bank");
+
+        output = outputStreamCaptor.toString();
+
+        Assertions.assertTrue(output.contains("Assets:Bank:DBS"));
+        Assertions.assertFalse(output.contains("Assets:Cash"));
+    }
 }
+

@@ -1,29 +1,33 @@
 package seedu.duke;
 
 public class Posting {
-    private final String accountName; // e.g., "Expenses:Food"
-    private final double amount; // The raw number from the user
+    private final Account account;
+    private final double amount;
 
     public Posting(String accountName, double amount) {
-        this.accountName = accountName;
+        this.account = new Account(accountName);
         this.amount = amount;
     }
 
     /**
-     * This replaces the logic that was in the Account class.
-     * It looks at the prefix of the string to decide the math.
+     * Uses the root account type to determine the internal sign convention.
      */
     public double getInternalAmount() {
-        String root = accountName.split(":")[0].toLowerCase();
+        String root = account.getRoot();
+
         if (root.equals("assets") || root.equals("expenses")) {
-            return amount; // Positive = Debit
+            return amount;
         } else {
-            return -amount; // Positive = Credit (mapped to negative for zero-sum)
+            return -amount;
         }
     }
 
     public String getAccountName() {
-        return accountName;
+        return account.getFullName();
+    }
+
+    public Account getAccount() {
+        return account;
     }
 
     public double getAmount() {

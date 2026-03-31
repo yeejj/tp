@@ -52,12 +52,26 @@ public class TransactionsList {
         double total = 0;
         for (Transaction t : transactions) {
             for (Posting p : t.getPostings()) {
-                if (p.getAccountName().startsWith(accountName)) {
+                if (p.getAccount().isUnder(accountName)) {
                     total += p.getAmount();
                 }
             }
         }
         return total;
+    }
+
+    public List<Posting> filterByAccount(String accountPrefix) {
+        List<Posting> result = new ArrayList<>();
+
+        for (Transaction t : transactions) {
+            for (Posting p : t.getPostings()) {
+                if (p.getAccount().isUnder(accountPrefix)) {
+                    result.add(p);
+                }
+            }
+        }
+
+        return result;
     }
 
     public void listTransactions() {
@@ -71,6 +85,74 @@ public class TransactionsList {
                 .forEach(this::printTransactionWithDisplayAmount);
     }
 
+    public void listTransactionsByAccount(String accountPrefix) {
+        List<Transaction> filteredTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            boolean hasMatchingPosting = false;
+            for (Posting posting : transaction.getPostings()) {
+                if (posting.getAccount().isUnder(accountPrefix)) {
+                    hasMatchingPosting = true;
+                    break;
+                }
+            }
+
+            if (hasMatchingPosting) {
+                filteredTransactions.add(transaction);
+            }
+        }
+
+        if (filteredTransactions.isEmpty()) {
+            System.out.println("No transactions found under account: " + accountPrefix);
+            return;
+        }
+
+        filteredTransactions.stream()
+                .sorted(Comparator.comparing(Transaction::getDate))
+                .forEach(transaction -> printFilteredTransaction(transaction, accountPrefix));
+    }
+
+    private void printFilteredTransaction(Transaction transaction, String accountPrefix) {
+        if (converter == null || !autoConvertDisplay) {
+            System.out.printf("ID: %d | Date: %s | Desc: %s | [%s]%n",
+                    transaction.getId(),
+                    transaction.getDateString(),
+                    transaction.getDescription(),
+                    transaction.getCurrency());
+
+            for (Posting posting : transaction.getPostings()) {
+                if (posting.getAccount().isUnder(accountPrefix)) {
+                    System.out.printf("    %-30s : %10.2f%n",
+                            posting.getAccountName(),
+                            posting.getAmount());
+                }
+            }
+            return;
+        }
+
+        System.out.printf("ID: %d | Date: %s | Desc: %s | [%s -> %s]%n",
+                transaction.getId(),
+                transaction.getDateString(),
+                transaction.getDescription(),
+                transaction.getCurrency(),
+                displayCurrency);
+
+        for (Posting posting : transaction.getPostings()) {
+            if (posting.getAccount().isUnder(accountPrefix)) {
+                double converted = converter.convert(
+                        posting.getAmount(),
+                        transaction.getCurrency(),
+                        displayCurrency);
+
+                System.out.printf("    %-30s : %10.2f | Display: %.2f %s%n",
+                        posting.getAccountName(),
+                        posting.getAmount(),
+                        converted,
+                        displayCurrency);
+            }
+        }
+    }
+
     private void printTransactionWithDisplayAmount(Transaction transaction) {
         if (converter == null || !autoConvertDisplay) {
             System.out.println(transaction);
@@ -79,12 +161,11 @@ public class TransactionsList {
 
         System.out.printf("ID: %d | Date: %s | Desc: %s | [%s -> %s]%n",
                 transaction.getId(),
-                transaction.getDate(),
+                transaction.getDateString(),
                 transaction.getDescription(),
                 transaction.getCurrency(),
                 displayCurrency);
 
-        // 2. Loop through postings to print the individual converted amounts
         List<Posting> postings = transaction.getPostings();
         for (Posting posting : postings) {
             double converted = converter.convert(
@@ -92,7 +173,6 @@ public class TransactionsList {
                     transaction.getCurrency(),
                     displayCurrency);
 
-            // Format it cleanly to match your standard toString() spacing
             System.out.printf("    %-30s : %10.2f | Display: %.2f %s%n",
                     posting.getAccountName(),
                     posting.getAmount(),
@@ -119,7 +199,7 @@ public class TransactionsList {
         logger.info("Editing transactions with ID: " + id);
         Transaction transaction = findById(id);
         transaction.update(date, desc, newPostings, currency);
-        // save(); // Call your save method here
+        save();
     }
 
     public Transaction getTransactionById(int id) {

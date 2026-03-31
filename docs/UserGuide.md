@@ -47,11 +47,29 @@ If you have the source code and want to build from source:
 ### What is Double-Entry Bookkeeping?
 Double-entry bookkeeping is an accounting method where every financial transaction affects at least two accounts. For every debit entry, there must be a corresponding credit entry of equal value. This system ensures that the accounting equation always remains balanced.
 
+```
+#### Hierarchical Accounts
+
+Ledger67 supports hierarchical account structures using `:`.
+
+This allows accounts to be organised into categories and subcategories:
+
+- `Assets:Cash`
+- `Assets:Bank:DBS`
+- `Expenses:Food`
+
+This structure enables more powerful filtering and organisation of financial data.
+```
+
 ### Key Concepts for Beginners
 
 #### 1. The Accounting Equation
 ```
-Assets = Equity - Liabilities +  (Income - Expenses)
+Assets = Liabilities + Equity
+
+Where:
+Equity is affected by Income and Expenses:
+Equity = Initial Equity + (Income - Expenses)
 ```
 - **Assets**: What you own (cash, inventory, equipment)
 - **Liabilities**: What you owe (loans, accounts payable)
@@ -60,7 +78,9 @@ Assets = Equity - Liabilities +  (Income - Expenses)
 - **Expenses**: Cost of Operation
 
 #### 2. How Transactions Work in Ledger67
-In Ledger67, each transaction you record represents one side of a double-entry. The system automatically ensures that for every transaction you enter, there's an implied corresponding entry to maintain balance.
+In Ledger67, each transaction in Ledger67 consists of multiple postings that together form a complete double-entry record.
+
+The system ensures that all postings within a transaction are balanced, meaning the total debits equal total credits.
 
 Each transaction is a collection of `Postings`
 Postings are records of money going into each category (Assets, Liabilities, Equity, etc)
@@ -88,8 +108,8 @@ Adds a new financial transaction to your ledger.
 - `-c`: The currency code (e.g., SGD, USD, EUR).
 
 ### Example
-```java
-add -d 18/03/2026 -desc "Office supplies" -p "Assets -45.50" -p "Expenses 45.50" -c SGD
+```
+add -d 18/03/2026 -desc "Office supplies" -p "Assets:Cash -45.50" -p "Expenses:OfficeSupplies 45.50" -c SGD
 ```
 
 ### Listing All Transactions: `list`
@@ -194,17 +214,17 @@ Transaction 3: 50.00 USD = 67.75 SGD
 - This is a view-mode feature only. It does NOT overwrite the stored transaction currency or amount.
 - To store the converted value, use the `confirm` command.
 
-### View Converted Values of All Listed Transactions: `list transaction -to`
+### View Converted Values of All Listed Transactions: `list -to TARGET_CURRENCY`
 Views all existing transactions to a different currency.
 
-**Format**: `list transaction -to TARGET_CURRENCY`
+**Format**: `list -to TARGET_CURRENCY`
 
 **Parameters**:
 - `-to TARGET_CURRENCY`: Target currency code - `SGD`, `USD`, or `EUR`
 
 **Example**:
 ```
-list transaction -to SGD
+list -to SGD
 ```
 Output:
 ```
@@ -310,6 +330,76 @@ confirm 2
 
 ---
 
+### Filtering Transactions by Account: `list -acc`
+Allows you to filter transactions based on hierarchical account categories.
+
+Ledger67 supports **hierarchical account names** using `:`. This means accounts can be structured into categories and subcategories such as:
+
+- `Assets:Cash`
+- `Assets:Bank:DBS`
+- `Expenses:Food`
+- `Income:Salary`
+
+#### Format
+```
+
+list -acc ACCOUNT
+
+```
+
+#### Examples
+```
+
+list -acc Assets
+list -acc Assets:Bank
+list -acc Expenses
+
+```
+
+#### Behaviour
+- Displays only transactions that contain postings under the specified account.
+- Supports hierarchical filtering:
+    - `Assets` → shows ALL asset-related postings (Cash, Bank, etc.)
+    - `Assets:Bank` → shows only bank-related postings
+- Filtering is **case-insensitive**.
+
+#### Example Output
+```
+
+ID: 2 | Date: 2026-03-19 | Desc: Salary | [USD]
+Assets:Bank:DBS              :    3000.00
+
+ID: 3 | Date: 2026-03-20 | Desc: Transfer | [SGD]
+Assets:Cash                  :    -500.00
+
+```
+
+---
+
+#### Combining with Currency View
+
+You can combine filtering with currency display:
+
+```
+
+list -acc Assets -to USD
+
+```
+
+This will:
+- Filter transactions under `Assets`
+- Display converted values in USD
+
+---
+
+#### Notes
+- This is a **view feature** — it does not modify stored data.
+- Filtering works based on account hierarchy (not simple text matching).
+```
+
+---
+
+
 ### Getting Help: `help`
 Displays available commands and usage instructions.
 
@@ -324,7 +414,7 @@ help
 
 **Q**: How do I transfer my data to another computer?
 
-**A**: Ledger67 currently stores transactions in memory during your session. For data persistence, you would need to implement file storage or database integration in future versions.
+**A**: Ledger67 stores transactions locally in a file. You can transfer your data by copying the data file to another computer.
 
 **Q**: What's the difference between debit and credit in simple terms?
 
@@ -340,25 +430,27 @@ help
 
 **Q**: How does Ledger67 handle the double-entry aspect if I only enter one side?
 
-**A**: Ledger67 is designed as a simplified double-entry system. When you record a transaction, you're entering one side of the entry (e.g., an expense debit). The system assumes there's a corresponding credit to cash or accounts payable, making it easier for users while maintaining accounting principles.
+**A**: Ledger67 is designed as a simplified double-entry system. When you record a transaction, you're entering one side of the entry (e.g., an expense debit). Ledger67 requires you to explicitly provide all postings in a transaction. Each transaction must include at least two postings, and the system validates that they balance.
 
 ## Command Summary
 
-| Command                      | Format                                                               | Description                       |
-|------------------------------|----------------------------------------------------------------------|-----------------------------------|
-| **Add**                      | `add -d DATE -desc DESC -a AMOUNT -t TYPE -c CURRENCY`               | Add a new transaction             |
-| **List**                     | `list`                                                               | Display all transactions          |
-| **Edit**                     | `edit ID [-d DATE] [-desc DESC] [-a AMOUNT] [-t TYPE] [-c CURRENCY]` | Edit an existing transaction      |
-| **Delete**                   | `delete ID`                                                          | Remove a transaction              |
-| **Clear**                    | `clear`                                                              | Remove all transactions           |
-| **Convert**                  | `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY`        | Convert currencies                |
-| **Convert Transaction**      | `convert transaction ID -to TARGET_CURRENCY`                         | Convert existing transaction      |
-| **Convert All Transactions** | `list transaction -to TARGET_CURRENCY`                               | Convert ALL existing transactions |
-| **Rates**                    | `rates refresh`                                                      | Refresh live exchange rates       |
-| **Confirm** | `confirm`, `confirm all`, `confirm ID` | Store converted transaction(s) |
-| **Help**                     | `help`                                                               | Show available commands           |
-| **Exit**                     | `exit`                                                               | Exit the application              |
-
+| Command                      | Format                                                               | Description                              |
+|------------------------------|----------------------------------------------------------------------|------------------------------------------|
+| **Add**                      | `add -d DATE -desc DESC -p POSTING -p POSTING -c CURRENCY`          | Add a new transaction                    |
+| **List**                     | `list`                                                               | Display all transactions                 |
+| **Filter by Account**        | `list -acc ACCOUNT`                                                  | Filter transactions by account           |
+| **List with Conversion**     | `list -to TARGET_CURRENCY`                                           | View transactions in another currency    |
+| **Filter + Convert**         | `list -acc ACCOUNT -to TARGET_CURRENCY`                              | Filter and convert                       |
+| **Edit**                     | `edit ID [-d DATE] [-desc DESC] [-p POSTING] [-c CURRENCY]`         | Edit an existing transaction             |
+| **Delete**                   | `delete ID`                                                          | Remove a transaction                     |
+| **Clear**                    | `clear`                                                              | Remove all transactions                  |
+| **Convert**                  | `convert -a AMOUNT -from SOURCE -to TARGET`                          | Convert currencies                       |
+| **Convert Transaction**      | `convert transaction ID -to TARGET`                                  | Convert stored transaction               |
+| **Rates**                    | `rates refresh`                                                      | Refresh exchange rates                   |
+| **Confirm**                  | `confirm`, `confirm all`, `confirm ID`                               | Store converted transactions             |
+| **Help**                     | `help`                                                               | Show help                                |
+| **Exit**                     | `exit`                                                               | Exit program                             |
+```
 ## Tips for Effective Use
 
 1. **Be Consistent**: Use clear, descriptive transaction descriptions that you'll understand later.

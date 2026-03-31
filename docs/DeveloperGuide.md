@@ -31,7 +31,7 @@ The Transaction Manager follows a layered architecture with the following main c
     - `ExchangeRateData`
     - `ExchangeRateStorage`
     - `LiveExchangeRateService`
-
+8. **Account System**: 'Account' handles hierarchial account parsing and filtering logic
 
 The components interact as follows:
 - `Duke` creates and initializes `Parser` and `TransactionsList`.
@@ -70,10 +70,12 @@ The TransactionsList component provides:
 - Logging for debugging and monitoring
 
 #### Model Components
-The Transaction, TransactionType, and CurrencyValidator classes form the data model:
+The Transaction, TransactionType, CurrencyValidator, Posting and Account classes form the data model:
 - **Transaction**: Represents a financial transaction with date, description, amount, type, and currency
 - **TransactionType**: Validates and stores transaction type (debit/credit)
 - **CurrencyValidator**: Validates currency codes against an approved list
+- **Posting**: Represents a single entry transaction, containing an account and amount.
+- **Account**: Encapsulates hierarchial account logic and validation
 
 
 **Key Relationships**:
@@ -115,6 +117,11 @@ The transaction flow manages the lifecycle of user financial records from user i
 *   **Encapsulated Validation:** Validation logic for specific fields is separated into utility/wrapper classes (`TransactionType` and `CurrencyValidator`) rather than bloating the `Transaction` class itself.
 *   **Wrapper Classes for Constrained Values:** Instead of keeping the transaction type as a raw string, it is wrapped in a `TransactionType` struct-like class.
     *   *Rationale:* It centralizes the string-matching logic (allowing case-insensitive checks for "debit" or "credit") and prevents typos from polluting the data model.
+*   **Hierarchical Account Design:**
+    *   *Rationale:*
+        * Accounts are structured using `:` to support nested categorisation 
+        * Enables scalable filtering and reporting 
+        * Avoids ambiguity compared to flat string-based categories
 ---
 
 ### Alternatives Considered
@@ -256,7 +263,7 @@ Features:
 #### 5. Display Currency Conversion (List View)
 Transactions can be displayed in a selected currency using:
 ```
-list transaction -to USD
+list -to USD
 ```
 
 * Uses `setDisplayCurrency()` and `setAutoConvertDisplay()`
@@ -318,10 +325,10 @@ New internal state variables in `Parser`:
     * Persists changes via `Storage.save()`
 ---
 
-##### Case 2: `list transaction -to`
+##### Case 2: `list -to`
 1. User runs:
    ```
-   list transaction -to SGD
+   list -to SGD
    ```
 2. System:
     * Displays converted values (view-only)
@@ -447,6 +454,44 @@ Implementer: ??
 ### [Proposed] Transaction Presets and UI Improvements
 Implementer: ??
 
+### Hierarchical Account Registry & Filtering Feature
+Implementer: JJ
+
+This feature allows users to filter transactions based on hierarchical account structures using the `list -acc` command.
+
+---
+#### Motivation
+
+As the number of transactions grows, users need a way to quickly isolate transactions belonging to specific financial categories such as Assets, Expenses, or Income.
+Hierarchical account structures (e.g., `Assets:Bank:DBS`) make simple string matching insufficient. Hence, a structured filtering mechanism was implemented.
+---
+#### Implementation
+This feature is implemented across three main components:
+
+1. **Parser**
+    - Detects the `-acc` flag
+    - Extracts the account filter string
+    - Passes it to `TransactionsList`
+
+2. **Account**
+    - Parses hierarchical account names using `:`
+    - Provides `isUnder(String parentAccount)` method
+    - Supports prefix-based hierarchical matching
+
+3. **TransactionsList**
+    - Iterates through all transactions
+    - Filters postings based on account hierarchy
+    - Displays only matching transactions
+
+---
+
+#### Core Logic
+The key method used is:
+```java
+public boolean isUnder(String parentAccount)
+
+#### Sequence Diagram
+![Hierarchical Account Registry & Filtering Feature Diagram](diagrams/HierachalAccRegFiltering.png)
 
 
 ## Appendix: Requirements

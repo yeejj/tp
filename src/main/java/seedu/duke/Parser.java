@@ -27,8 +27,8 @@ public class Parser {
     private boolean pendingFromListView = false;
 
     public Parser(TransactionsList list, CurrencyConverter converter,
-            ExchangeRateStorage exchangeRateStorage,
-            LiveExchangeRateService liveExchangeRateService) {
+                  ExchangeRateStorage exchangeRateStorage,
+                  LiveExchangeRateService liveExchangeRateService) {
         assert list != null : "Parser requires a valid TransactionsList instance.";
         assert converter != null : "Parser requires a valid CurrencyConverter instance.";
         assert exchangeRateStorage != null : "Parser requires a valid ExchangeRateStorage instance.";
@@ -297,38 +297,52 @@ public class Parser {
     }
 
     private void handleList(String args) {
-        if (!args.isEmpty()) {
-            Map<String, List<String>> map = parseArguments(args);
-            String to = getFirstElementFromMap(map, "-to");
-            if (to != null) {
-                to = CurrencyValidator.validateAndGet(to);
-                list.setDisplayCurrency(to);
-                list.setAutoConvertDisplay(true);
-                list.listTransactions();
-
-                if (!list.getTransactions().isEmpty()) {
-                    pendingTransactionId = null;
-                    pendingTargetCurrency = to;
-                    pendingFromListView = true;
-
-                    System.out.println();
-                    System.out.println("The displayed values are view-only by default.");
-                    System.out.println("Type 'confirm all' to store ALL transactions in " + to + ".");
-                    System.out.println("Type 'confirm ID' to store one displayed transaction in " + to + ".");
-                    System.out.println("Example: confirm 3");
-                    System.out.println("Enter any other command to ignore.");
-                }
-                return;
-            } else {
-                list.setAutoConvertDisplay(false);
-            }
-        } else {
-            list.setAutoConvertDisplay(false);
-            list.listTransactions();
-        }
-
         clearPendingConfirmation();
 
+        Map<String, List<String>> map = parseArguments(args);
+        String to = getFirstElementFromMap(map, "-to");
+        String acc = getFirstElementFromMap(map, "-acc");
+
+        if (to != null) {
+            to = CurrencyValidator.validateAndGet(to);
+            list.setDisplayCurrency(to);
+            list.setAutoConvertDisplay(true);
+        } else {
+            list.setAutoConvertDisplay(false);
+        }
+
+        if (acc != null) {
+            list.listTransactionsByAccount(acc);
+
+            if (to != null && !list.getTransactions().isEmpty()) {
+                pendingTransactionId = null;
+                pendingTargetCurrency = to;
+                pendingFromListView = true;
+
+                System.out.println();
+                System.out.println("The displayed values are view-only by default.");
+                System.out.println("Type 'confirm all' to store ALL transactions in " + to + ".");
+                System.out.println("Type 'confirm ID' to store one displayed transaction in " + to + ".");
+                System.out.println("Example: confirm 3");
+                System.out.println("Enter any other command to ignore.");
+            }
+            return;
+        }
+
+        list.listTransactions();
+
+        if (to != null && !list.getTransactions().isEmpty()) {
+            pendingTransactionId = null;
+            pendingTargetCurrency = to;
+            pendingFromListView = true;
+
+            System.out.println();
+            System.out.println("The displayed values are view-only by default.");
+            System.out.println("Type 'confirm all' to store ALL transactions in " + to + ".");
+            System.out.println("Type 'confirm ID' to store one displayed transaction in " + to + ".");
+            System.out.println("Example: confirm 3");
+            System.out.println("Enter any other command to ignore.");
+        }
     }
 
     private void handleDelete(String args) {
@@ -475,84 +489,99 @@ public class Parser {
         System.out.println("   Format: add -d DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY");
         System.out.println("   ASSETS = EQUITY - LIABILITIES + (INCOME - EXPENSES)");
         System.out.println("   Each transaction must be balanced. This is checked by the system automatically.");
+        System.out.println("   Postings support hierarchical account names using ':'");
+        System.out.println("   Examples: Assets:Cash, Assets:Bank:DBS, Expenses:Food, Income:Salary");
         System.out.println("   Example: add -d 18/03/2026 -desc Office supplies -p " +
-                "\"Assets -45.50\" -p \"Expenses 45.50\" -c SGD");
+                "\"Assets:Cash -45.50\" -p \"Expenses:OfficeSupplies 45.50\" -c SGD");
         System.out.println();
 
         System.out.println("2. list - Display all transactions");
         System.out.println("   Format: list");
-        System.out.println("   Optional: list transaction -to CURRENCY");
-        System.out.println("   Example: list transaction -to USD");
+        System.out.println("   Optional A: list -to CURRENCY");
+        System.out.println("   Optional B: list -acc ACCOUNT");
+        System.out.println("   Optional C: list -acc ACCOUNT -to CURRENCY");
+        System.out.println("   Example: list -acc Assets");
+        System.out.println("   Example: list -acc Assets:Bank -to USD");
         System.out.println();
 
-        System.out.println("3. list transaction -to CURRENCY - Display transactions with converted view values");
-        System.out.println("   Format: list transaction -to CURRENCY");
-        System.out.println("   Example: list transaction -to USD");
+        System.out.println("3. list -acc ACCOUNT - Filter transactions by hierarchical account");
+        System.out.println("   Format: list -acc ACCOUNT");
+        System.out.println("   Example: list -acc Expenses");
+        System.out.println("   Example: list -acc Assets:Bank");
+        System.out.println("   Only postings under the given account category will be shown.");
+        System.out.println();
+
+        System.out.println("4. list -to CURRENCY - Display transactions with converted view values");
+        System.out.println("   Format: list -to CURRENCY");
+        System.out.println("   Example: list -to USD");
         System.out.println("   By default, this is a view-only feature.");
         System.out.println("   To store all displayed conversions, use: confirm all");
         System.out.println("   To store one displayed conversion, use: confirm ID");
         System.out.println("   Example: confirm 3");
         System.out.println();
 
-        System.out.println("4. edit - Modify an existing transaction");
+        System.out.println("5. edit - Modify an existing transaction");
         System.out.println("   Format: edit ID [-d DATE] [-desc DESC] [-p POSTING] [-c CURRENCY]");
-        System.out.println("   Example: edit 1 -desc Updated description -a 50.00");
+        System.out.println("   Example: edit 1 -desc Updated description -p " +
+                "\"Expenses:Food 50\" -p \"Assets:Cash -50\"");
         System.out.println();
 
-        System.out.println("5. delete - Remove a transaction");
+        System.out.println("6. delete - Remove a transaction");
         System.out.println("   Format: delete ID");
         System.out.println("   Example: delete 3");
         System.out.println();
 
-        System.out.println("6. clear - Remove all transactions");
+        System.out.println("7. clear - Remove all transactions");
         System.out.println("   Format: clear");
         System.out.println();
 
-        System.out.println("7. convert - Convert currencies");
+        System.out.println("8. convert - Convert currencies");
         System.out.println("   Format: convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY");
         System.out.println("   Example: convert -a 100 -from USD -to SGD");
         System.out.println("   Note: This is a view-mode feature only. It does NOT create or store a transaction.");
         System.out.println();
 
-        System.out.println("8. convert transaction - Convert an existing transaction");
+        System.out.println("9. convert transaction - Convert an existing transaction");
         System.out.println("   Format: convert transaction ID -to TARGET_CURRENCY");
         System.out.println("   Example: convert transaction 3 -to SGD");
         System.out.println("   By default, this is a view-mode feature only & won't modify the stored transaction.");
         System.out.println("   To store the converted transaction, type: confirm");
         System.out.println();
 
-        System.out.println("9. confirm - Store viewed converted transaction(s)");
+        System.out.println("10. confirm - Store viewed converted transaction(s)");
         System.out.println("   After convert transaction ...");
         System.out.println("   Format: confirm");
         System.out.println();
-        System.out.println("   After list transaction -to ...");
+        System.out.println("   After list -to ...");
         System.out.println("   Format A: confirm all");
         System.out.println("   Format B: confirm ID");
         System.out.println("   Example: confirm all");
         System.out.println("   Example: confirm 3");
         System.out.println();
 
-        System.out.println("10. rates - Refresh live exchange rates");
+        System.out.println("11. rates - Refresh live exchange rates");
         System.out.println("    Format: rates refresh");
         System.out.println();
 
-        System.out.println("11. help - Show this help message");
+        System.out.println("12. help - Show this help message");
         System.out.println("    Format: help");
         System.out.println();
 
-        System.out.println("12. exit - Exit the application");
+        System.out.println("13. exit - Exit the application");
         System.out.println("    Format: exit");
         System.out.println();
 
         System.out.println("=== Additional Information ===");
         System.out.println("- DATE format: DD/MM/YYYY (e.g., 18/03/2026)");
-        System.out.println("- TYPE must be either 'debit' or 'credit'");
         System.out.println("- CURRENCY must be one of: SGD, USD, EUR");
         System.out.println("- ID is shown when using the 'list' command");
         System.out.println("- Transactions are stored locally on your machine");
         System.out.println("- Exchange rates are loaded from exchange-rates.json");
         System.out.println("- Converted values are view-only unless confirmed");
         System.out.println("- Any command other than confirm will ignore the pending conversion");
+        System.out.println("- Account names may be hierarchical using ':'");
+        System.out.println("- Example account names: Assets:Cash, Assets:Bank:DBS, Expenses:Food");
+        System.out.println("- Valid root account types are: Assets, Liabilities, Equity, Income, Expenses");
         System.out.println();
         System.out.println("For detailed documentation, please refer to the User Guide.");
     }

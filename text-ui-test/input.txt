@@ -6,10 +6,10 @@ add
 add -d 18/03/2026 -desc missing postings -c SGD
 add -d 18/03/2026 -desc invalid posting format -p "Assets" -c SGD
 add -d 18/03/2026 -desc invalid posting amount -p "Assets abc" -c SGD
-add -d 18/03/2026 -desc Transaction 1 -p "Assets 100" -p "Equity -100" -c SGD
-add -d 19/03/2026 -desc Transaction 2 -p "Expenses 50" -p "Assets -50" -c SGD
-add -d 20/03/2026 -desc Transaction 3 -p "Bank Account 200" -p "Sales -200" -c USD
-add -d 21/03/2026 -desc Transaction 4 -p "Assets 300" -p "Equity -300" -c EUR
+add -d 18/03/2026 -desc Transaction 1 -p "Assets:Cash 100" -p "Equity:Capital 100" -c SGD
+add -d 19/03/2026 -desc Transaction 2 -p "Expenses:General 50" -p "Assets:Cash -50" -c SGD
+add -d 20/03/2026 -desc Transaction 3 -p "Assets:Bank:Main 200" -p "Income:Sales 200" -c USD
+add -d 21/03/2026 -desc Transaction 4 -p "Assets:Cash 300" -p "Equity:Capital 300" -c EUR
 
 list
 
@@ -28,19 +28,19 @@ convert transaction 2 -to EUR
 list
 confirm
 
-list transaction -to EUR
+list -to EUR
 confirm
 confirm abc
 confirm 2
 
-list transaction -to USD
+list -to USD
 confirm all
 
 edit
 edit abc
 edit 1
 edit 1 -p "Assets"
-edit 1 -d 22/03/2026 -desc Edited Transaction 1 -p "Assets 150" -p "Equity -150" -c USD
+edit 1 -d 22/03/2026 -desc Edited Transaction 1 -p "Assets:Cash 150" -p "Equity:Capital 150" -c USD
 
 delete
 delete abc

@@ -180,4 +180,16 @@ public class ParserTest {
         assertTrue(output.contains("convert transaction"));
         assertTrue(output.contains("confirm all"));
     }
+
+    @Test
+    public void testListAccCommand() {
+        list.addTransaction(createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
+
+        outputStreamCaptor.reset();
+        String input = "list -acc Assets\nexit";
+        runParserWithInput(input);
+
+        String output = outputStreamCaptor.toString();
+        assertTrue(output.contains("Assets"));
+    }
 }
