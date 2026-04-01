@@ -251,16 +251,17 @@ LIABILITIES
 
 EQUITY
   Retained Earnings Breakdown
+    Expenses                                           -7.47
     Expenses:Entertainment                            -15.00
     Expenses:Food                                     -61.06
     Expenses:Transport                                -14.93
-  Current Period Net Income                       -90.99
-  Total Equity                                    -90.99
+  Current Period Net Income                       -98.46
+  Total Equity                                    -98.46
 
 CHECK
   Total Assets                                    -98.46
-  Liabilities + Total Equity                      -90.99
-  Equation Status                             FAIL
+  Liabilities + Total Equity                      -98.46
+  Equation Status                             PASS
 =========================
 ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
@@ -277,16 +278,17 @@ LIABILITIES
 
 EQUITY
   Retained Earnings Breakdown
+    Expenses                                           -7.47
     Expenses:Entertainment                            -15.00
     Expenses:Food                                     -61.06
     Expenses:Transport                                -14.93
-  Current Period Net Income                       -90.99
-  Total Equity                                    -90.99
+  Current Period Net Income                       -98.46
+  Total Equity                                    -98.46
 
 CHECK
   Total Assets                                    -98.46
-  Liabilities + Total Equity                      -90.99
-  Equation Status                             FAIL
+  Liabilities + Total Equity                      -98.46
+  Equation Status                             PASS
 =========================
 ===== BALANCE SHEET =====
 Scope: Assets
@@ -355,14 +357,15 @@ LIABILITIES
 
 EQUITY
   Retained Earnings Breakdown
+    Expenses                                           -7.47
     Expenses:Entertainment                            -15.00
-  Current Period Net Income                       -15.00
-  Total Equity                                    -15.00
+  Current Period Net Income                       -22.47
+  Total Equity                                    -22.47
 
 CHECK
   Total Assets                                    -22.47
-  Liabilities + Total Equity                      -15.00
-  Equation Status                             FAIL
+  Liabilities + Total Equity                      -22.47
+  Equation Status                             PASS
 =========================
 All transactions have been cleared.
 No matching transactions found.
