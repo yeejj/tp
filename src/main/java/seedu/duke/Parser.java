@@ -586,13 +586,18 @@ public class Parser {
         System.out.println();
 
         System.out.println("1. add - Add a new transaction");
-        System.out.println("   Format: add -date DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY");
+        System.out.println("   Format (Manual): add -date DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY");
         System.out.println("   ASSETS = EQUITY - LIABILITIES + (INCOME - EXPENSES)");
         System.out.println("   Each transaction must be balanced. This is checked by the system automatically.");
         System.out.println("   Postings support hierarchical account names using ':'");
         System.out.println("   Examples: Assets:Cash, Assets:Bank:DBS, Expenses:Food, Income:Salary");
         System.out.println("   Example: add -date 18/03/2026 -desc Office supplies -p " +
                 "\"Assets:Cash -45.50\" -p \"Expenses:OfficeSupplies 45.50\" -c SGD");
+        System.out.println("   Format (Preset): add -date DATE -preset TYPE AMOUNT -c CURRENCY");
+        System.out.println("   Presets: DAILYEXPENSE, INCOME, BUYINGSTOCKS");
+        System.out.println("   Example: add -date 18/03/2026 -preset DAILYEXPENSE 50.00 -c SGD");
+        System.out.println("   Example: add -date 18/03/2026 -desc Office supplies -p \"Assets:Cash -45.50\" " +
+                "-p \"Expenses:OfficeSupplies 45.50\" -c SGD");
         System.out.println();
 
         System.out.println("2. list - Display and filter transactions");

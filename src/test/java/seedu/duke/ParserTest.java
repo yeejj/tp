@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -214,5 +216,60 @@ public class ParserTest {
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("Scope: Assets"));
+    }
+
+    @Test
+    public void generatePostings_dailyExpense_success() {
+        List<Posting> postings = PresetHandler.generatePostings("DAILYEXPENSE 50.00");
+        assertEquals(2, postings.size());
+        
+        // Expenses +50, Cash -50
+        assertEquals("Expenses", postings.get(0).getAccountName());
+        assertEquals(50.0, postings.get(0).getAmount());
+        assertEquals("Assets:Cash", postings.get(1).getAccountName());
+        assertEquals(-50.0, postings.get(1).getAmount());
+    }
+
+    @Test
+    public void generatePostings_income_success() {
+        List<Posting> postings = PresetHandler.generatePostings("INCOME 1000");
+        assertEquals(2, postings.size());
+        
+        // Bank +1000, Income -1000
+        assertEquals("Assets:Bank", postings.get(0).getAccountName());
+        assertEquals(1000.0, postings.get(0).getAmount());
+        assertEquals("Income", postings.get(1).getAccountName());
+        assertEquals(-1000.0, postings.get(1).getAmount());
+    }
+
+    @Test
+    public void generatePostings_invalidFormat_exceptionThrown() {
+        // Missing amount
+        assertThrows(IllegalArgumentException.class, () -> {
+            PresetHandler.generatePostings("DAILYEXPENSE");
+        });
+    }
+
+    @Test
+    public void generatePostings_invalidAmount_exceptionThrown() {
+        // Amount is not a number
+        assertThrows(IllegalArgumentException.class, () -> {
+            PresetHandler.generatePostings("DAILYEXPENSE abc");
+        });
+    }
+
+    @Test
+    public void generatePostings_unknownType_exceptionThrown() {
+        // Type does not exist
+        assertThrows(IllegalArgumentException.class, () -> {
+            PresetHandler.generatePostings("GIFT 10.00");
+        });
+    }
+
+    @Test
+    public void generatePostings_emptyInput_exceptionThrown() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            PresetHandler.generatePostings("");
+        });
     }
 }
