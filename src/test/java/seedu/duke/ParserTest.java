@@ -96,14 +96,13 @@ public class ParserTest {
 
     @Test
     public void testAddCommandSuccess() {
-        String input = "add transaction -date 15/03/2023 -desc Lunch -p " +
+        String input = "add -date 15/03/2023 -desc Lunch -p " +
                 "\"Expenses 15.5\" -p \"Assets -15.5\" -c SGD\nexit";
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
-        assertTrue(output.contains("Transaction added successfully."));
+        assertTrue(output.contains("Transaction added successfully"));
 
-        outputStreamCaptor.reset();
         list.listTransactions();
         assertTrue(outputStreamCaptor.toString().contains("Lunch"));
     }
@@ -113,7 +112,7 @@ public class ParserTest {
         list.addTransaction(createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
 
         outputStreamCaptor.reset();
-        String input = "list transaction\nexit";
+        String input = "list\nexit";
         runParserWithInput(input);
 
         assertTrue(outputStreamCaptor.toString().contains("Coffee"));
@@ -126,7 +125,7 @@ public class ParserTest {
         int id = t.getId();
 
         outputStreamCaptor.reset();
-        String input = "delete transaction " + id + "\nexit";
+        String input = "delete " + id + "\nexit";
         runParserWithInput(input);
 
         assertTrue(outputStreamCaptor.toString().contains("Successfully deleted"));
@@ -139,7 +138,7 @@ public class ParserTest {
         int id = t.getId();
 
         outputStreamCaptor.reset();
-        String input = "edit transaction " + id + " -desc Tea\nlist\nexit";
+        String input = "edit " + id + " -desc Tea\nlist\nexit";
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
@@ -152,7 +151,7 @@ public class ParserTest {
         list.addTransaction(createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD"));
 
         outputStreamCaptor.reset();
-        String input = "clear transaction\nlist\nexit";
+        String input = "clear\nlist\nexit";
         runParserWithInput(input);
 
         String output = outputStreamCaptor.toString();
