@@ -186,15 +186,17 @@ I implemented several core features that significantly extend the system’s cap
 ---
 
 ## Contributions to the Developer Guide (Extracts)
-### Class Diagrams
+#### Class Diagrams
 
 The following class diagram shows the relationships between all components:
 
-![Class Diagram](../diagrams/ClassDiagram.png)
+![Class Diagram](./diagrams/ClassDiagram.png)
 
 ### Storage Feature
+
 Implementer: JJ
 The storage feature is responsible for persisting transaction data to local file storage and restoring it upon application startup.
+
 ---
 
 #### 1. Transaction Persistence
@@ -206,6 +208,7 @@ The `Storage` class manages reading from and writing to a local text file (`ledg
 This ensures:
 * Data durability across application runs
 * Minimal risk of data loss
+
 ---
 
 #### 2. Loading Transactions
@@ -215,6 +218,7 @@ Upon application startup, `Storage` loads all previously saved transactions into
 * Reconstructs transaction IDs and updates the auto-increment counter
 
 Invalid or malformed lines are safely ignored to prevent crashes.
+
 ---
 
 #### 3. Data Encoding and Decoding
@@ -223,6 +227,7 @@ To ensure file integrity, special characters are handled using escaping:
 * `\n` for newlines
 * `\\` for backslashes
   This prevents corruption of the file format when storing user input.
+
 ---
 
 #### 4. Integration with TransactionsList
@@ -233,6 +238,7 @@ The `TransactionsList` component interacts directly with `Storage`:
 This design ensures:
 * Separation of concerns between data management and persistence
 * Consistent synchronization between memory and disk
+
 ---
 
 #### Design Considerations
@@ -242,17 +248,21 @@ This design ensures:
 * **Encapsulation**: Storage logic is isolated from business logic in `TransactionsList`
 
 #### Sequence Diagram
-![Storage Sequence Diagram](../diagrams/StorageSequence.png)
+![Storage Sequence Diagram](diagrams/StorageSequence.png)
 
 The diagram above shows:
 * `TransactionsList` triggering save operations
 * `Storage` writing transaction data to file
 * Data being reloaded when the application starts
+
 ---
 
 ### Currency Conversion Feature
+
 Implementer: JJ
+
 The currency conversion feature extends the system by introducing dynamic currency handling, persistent exchange rate storage, and real-time rate retrieval.
+
 ---
 
 #### Integration with Architecture
@@ -267,6 +277,7 @@ These components are connected as follows:
 * `Parser` handles `convert` and `rates` commands
 * `TransactionsList` uses the converter for display-level conversions
 * `ExchangeRateStorage` ensures exchange rates persist across application runs
+
 ---
 
 #### 1. Simple Currency Conversion
@@ -274,6 +285,7 @@ The `CurrencyConverter` class provides the core conversion logic via the `conver
 * Validates currencies using `CurrencyValidator`
 * Converts via a base currency for consistency
 * Handles same-currency conversion as a no-op
+
 ---
 
 #### 2. Exchange Rate Storage
@@ -285,6 +297,7 @@ The `ExchangeRateStorage` component ensures exchange rate data is persisted loca
 This allows the application to:
 * Avoid repeated API calls
 * Maintain functionality even without internet access
+
 ---
 
 #### 3. Live Exchange Rate Integration
@@ -295,6 +308,7 @@ The `LiveExchangeRateService` fetches real-time exchange rates from an external 
 * Triggered using the `rates refresh` command
 
 A fallback mechanism in `Duke` ensures the system remains functional if live data retrieval fails.
+
 ---
 
 #### 4. Conversion of Stored Transactions
@@ -307,6 +321,7 @@ Features:
 * Converts a transaction by ID
 * Uses latest available exchange rates
 * Preserves original stored values
+
 ---
 
 #### 5. Display Currency Conversion (List View)
@@ -318,6 +333,7 @@ list -to USD
 * Uses `setDisplayCurrency()` and `setAutoConvertDisplay()`
 * Conversion is applied during output rendering
 * Does not overwrite stored transaction data
+
 ---
 
 #### Design Considerations
@@ -326,20 +342,23 @@ list -to USD
 * **Resilience**: Fallback data ensures continued functionality without API access
 
 #### Sequence Diagram
-![Convert Transaction Sequence Diagram](../diagrams/ConvertTransactionSequence.png)
+![Convert Transaction Sequence Diagram](diagrams/ConvertTransactionSequence.png)
 
 The diagram above illustrates how user input flows through the system:
 * `Parser` extracts and validates inputs
 * `CurrencyValidator` ensures valid currencies
 * `CurrencyConverter` performs the conversion
 * Results are displayed without modifying stored data
+
 ---
 
 
 #### 6. Confirm and Store Converted Transactions
+
 This feature extends the currency conversion system by allowing users to **persist converted values into storage**,
 instead of keeping them as view-only.
 Previously, all conversion operations (`convert`, `convert transaction`, `list transaction -to`) were strictly **non-destructive**.
+
 ---
 
 #### Implementation Details
@@ -350,7 +369,8 @@ New internal state variables in `Parser`:
 * `pendingTransactionId`: stores the transaction ID (for single conversion)
 * `pendingTargetCurrency`: stores the selected target currency
 * `pendingFromListView`: indicates whether the conversion came from list view
----
+
+![Transaction Presets Diagram](diagrams/transactionspreset.png)
 
 ##### Workflow
 ##### Case 1: `convert transaction`
@@ -401,49 +421,11 @@ New internal state variables in `Parser`:
     * Avoids modifying core model classes
 * **Reuse of Existing Logic**
     * Uses `editTransaction()` instead of creating new update methods
+
 ---
 
 #### Sequence Diagram
-![Confirm Transaction Sequence Diagram](../diagrams/ConfirmTransactionSequence.png)
-
-### Hierarchical Account Registry & Filtering Feature
-Implementer: JJ
-
-This feature allows users to filter transactions based on hierarchical account structures using the `list -acc` command.
-
----
-#### Motivation
-
-As the number of transactions grows, users need a way to quickly isolate transactions belonging to specific financial categories such as Assets, Expenses, or Income.
-Hierarchical account structures (e.g., `Assets:Bank:DBS`) make simple string matching insufficient. Hence, a structured filtering mechanism was implemented.
----
-#### Implementation
-This feature is implemented across three main components:
-
-1. **Parser**
-    - Detects the `-acc` flag
-    - Extracts the account filter string
-    - Passes it to `TransactionsList`
-
-2. **Account**
-    - Parses hierarchical account names using `:`
-    - Provides `isUnder(String parentAccount)` method
-    - Supports prefix-based hierarchical matching
-
-3. **TransactionsList**
-    - Iterates through all transactions
-    - Filters postings based on account hierarchy
-    - Displays only matching transactions
-
----
-
-#### Core Logic
-The key method used is:
-
-public boolean isUnder(String parentAccount)
-
-#### Sequence Diagram
-![Hierarchical Account Registry & Filtering Feature Diagram](../diagrams/HierachalAccRegFiltering.png)
+![Confirm Transaction Sequence Diagram](diagrams/ConfirmTransactionSequence.png)
 
 ### Balance Sheet Feature
 Implementer: JJ
@@ -451,11 +433,11 @@ Implementer: JJ
 The Balance Sheet feature allows users to generate a real-time summary of their financial position based on the accounting equation:
 
 ```
-Assets = Liabilities + Equity
-
+Assets = Equity - Liabilities + (Income - Expenses)
 ```
 
 It aggregates all transactions and computes totals across hierarchical account categories.
+
 ---
 
 #### Integration with Architecture
@@ -469,23 +451,23 @@ This feature primarily extends:
 
 New component:
 - `BalanceSheet` → handles formatting and export logic
+
 ---
 
 #### 1. Command Handling
 
 The `Parser` handles the following command formats:
 ```
-
 balance
 balance -acc ACCOUNT
 balance -to TARGET_CURRENCY
 balance -acc ACCOUNT -to TARGET_CURRENCY
-
 ````
 
 The parser:
 - extracts optional flags (`-acc`, `-to`)
 - passes parameters to `TransactionsList.printBalanceSheet(...)`
+
 ---
 
 #### 2. Balance Aggregation Logic
@@ -614,7 +596,48 @@ balanceSheet.exportToCsv("data/balance-sheet.csv");
 ---
 
 #### Sequence Diagram
-![Balance Sheet Sequence Diagram](../diagrams/BalanceSheetSequence.png)
+![Balance Sheet Sequence Diagram](diagrams/BalanceSheetSequence.png)
+
+### Hierarchical Account Registry & Filtering Feature
+Implementer: JJ
+
+This feature allows users to filter transactions based on hierarchical account structures using the `list -acc` command.
+
+---
+#### Motivation
+
+As the number of transactions grows, users need a way to quickly isolate transactions belonging to specific financial categories such as Assets, Expenses, or Income.
+Hierarchical account structures (e.g., `Assets:Bank:DBS`) make simple string matching insufficient. Hence, a structured filtering mechanism was implemented.
+
+---
+#### Implementation
+This feature is implemented across three main components:
+
+1. **Parser**
+    - Detects the `-acc` flag
+    - Extracts the account filter string
+    - Passes it to `TransactionsList`
+
+2. **Account**
+    - Parses hierarchical account names using `:`
+    - Provides `isUnder(String parentAccount)` method
+    - Supports prefix-based hierarchical matching
+
+3. **TransactionsList**
+    - Iterates through all transactions
+    - Filters postings based on account hierarchy
+    - Displays only matching transactions
+
+---
+
+#### Core Logic
+The key method used is:
+
+public boolean isUnder(String parentAccount)
+
+#### Sequence Diagram
+![Hierarchical Account Registry & Filtering Feature Diagram](diagrams/HierachalAccRegFiltering.png)
+
 
 ## Contributions to the User Guide (Extracts)
 ### Currency Conversion: `convert`
