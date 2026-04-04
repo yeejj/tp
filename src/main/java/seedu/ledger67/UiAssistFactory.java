@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.ledger67;
 
 import java.util.Scanner;
 
@@ -10,25 +10,25 @@ public class UiAssistFactory {
 
     public static String getInteractiveArguments(String command, Scanner scanner) {
         switch (command.toLowerCase()) {
-            case "add":
-                return promptForAdd(scanner);
-            case "list":
-                return promptForList(scanner);
-            case "delete":
-                return promptForDelete(scanner);
-            case "edit":
-                return promptForEdit(scanner);
-            case "convert":
-                return promptForConvert(scanner);
-            case "balance":
-                return promptForBalance(scanner);
-            case "rates":
-                return "refresh"; // 'rates' only takes 'refresh'
-            case "clear":
-            case "help":
-                return ""; // These commands don't need arguments
-            default:
-                return "";
+        case "add":
+            return promptForAdd(scanner);
+        case "list":
+            return promptForList(scanner);
+        case "delete":
+            return promptForDelete(scanner);
+        case "edit":
+            return promptForEdit(scanner);
+        case "convert":
+            return promptForConvert(scanner);
+        case "balance":
+            return promptForBalance(scanner);
+        case "rates":
+            return "refresh"; // 'rates' only takes 'refresh'
+        case "clear":
+        case "help":
+            return ""; // These commands don't need arguments
+        default:
+            return "";
         }
     }
 
@@ -62,6 +62,7 @@ public class UiAssistFactory {
             }
         } else {
             // Preset Entry
+            
             System.out.println("\nAvailable Presets: DAILYEXPENSE, INCOME, BUYINGSTOCKS");
             String presetType = askRequiredValue(scanner, "Enter preset type");
             String presetAmount = askRequiredValue(scanner, "Enter preset amount");
@@ -217,10 +218,12 @@ public class UiAssistFactory {
         while (true) {
             System.out.print("Select (1 or 2): ");
             String input = scanner.nextLine().trim();
-            if (input.equals("1"))
+            if (input.equals("1")){
                 return 1;
-            if (input.equals("2"))
+            }
+            if (input.equals("2")){
                 return 2;
+            }
             System.out.println("Invalid selection. Please enter 1 or 2.");
         }
     }

@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.ledger67;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +29,9 @@ public class Parser {
     private String pendingTargetCurrency = null;
     private boolean pendingFromListView = false;
 
+    private boolean isUiAssistOn = false;
+    private Scanner scanner;
+    
     public Parser(TransactionsList list, CurrencyConverter converter,
             ExchangeRateStorage exchangeRateStorage,
             LiveExchangeRateService liveExchangeRateService) {
@@ -44,8 +47,7 @@ public class Parser {
     }
 
 
-    private boolean isUiAssistOn = false;
-    private Scanner scanner;
+    
     
     public void start() {
         this.scanner = new Scanner(System.in);
@@ -709,6 +711,11 @@ public class Parser {
         System.out.println("    Optional C: balance -acc ACCOUNT -to CURRENCY");
         System.out.println("    Example: balance -to USD");
         System.out.println("    Example: balance -acc Assets:Bank");
+        System.out.println();
+
+        System.out.println("15. uiassist - Turn on/off UI Assistance");
+        System.out.println("    Format: uiassist -on/off");
+        System.out.println("    With UI Assistance on, the program will guide the user through using prompted inputs");
         System.out.println();
 
         System.out.println("=== Additional Information ===");
