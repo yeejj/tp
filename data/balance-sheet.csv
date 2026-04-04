@@ -8,10 +8,10 @@ Assets,Assets:Cash,-1140.00
 Assets,Assets:Investment,1000.00
 Assets,Total Assets,-186.50
 Liabilities,Total Liabilities,0.00
-Retained Earnings (Expenses),Expenses,-121.50
+Retained Earnings (Expenses),Expenses,-171.50
 Retained Earnings (Expenses),Expenses:Food,-65.00
-Equity,Current Period Net Income,-186.50
-Equity,Total Equity,-186.50
+Equity,Current Period Net Income,-236.50
+Equity,Total Equity,-236.50
 
 Check,Total Assets,-186.50
-Check,Liabilities + Total Equity,-186.50
+Check,Liabilities + Total Equity,-236.50

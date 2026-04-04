@@ -43,14 +43,28 @@ public class Parser {
         this.liveExchangeRateService = liveExchangeRateService;
     }
 
+
+    private boolean isUiAssistOn = false;
+    private Scanner scanner;
+    
     public void start() {
-        Scanner scanner = new Scanner(System.in);
+        this.scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
             if (input.isEmpty()) {
+                continue;
+            }
+            
+            if (input.equalsIgnoreCase("uiassist -on")) {
+                isUiAssistOn = true;
+                System.out.println("UI Assist is now ON. I will guide you through commands.");
+                continue;
+            } else if (input.equalsIgnoreCase("uiassist -off")) {
+                isUiAssistOn = false;
+                System.out.println("UI Assist is now OFF. Standard command mode active.");
                 continue;
             }
 
@@ -182,6 +196,15 @@ public class Parser {
         String[] parts = input.split("\\s+", 2);
         String command = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1].trim() : "";
+
+        if (isUiAssistOn && arguments.isEmpty()) {
+            String interactiveArgs = UiAssistFactory.getInteractiveArguments(command, this.scanner);
+            if (!interactiveArgs.isEmpty()) {
+                arguments = interactiveArgs;
+                // Optional: Show the user what was generated so they learn the CLI formatting
+                System.out.println("[Generated Command: " + command + " " + arguments + "]");
+            }
+        }
 
         if (!command.equals("convert") && !command.equals("rates")) {
             if (arguments.toLowerCase().startsWith("transaction ")) {
