@@ -214,112 +214,37 @@ Type 'confirm all' to store ALL transactions in USD.
 Type 'confirm ID' to store one displayed transaction in USD.
 Example: confirm 3
 Enter any other command to ignore.
-Enter Command: Enter Command: Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD -> EUR]
-    Expenses:Food                  :      15.00 | Display: 10.27 EUR
-    Assets:Cash                    :     -15.00 | Display: -10.27 EUR
-ID: 3 | Date: 01/01/2026 | Desc: Office Lunch | [SGD -> EUR]
-    Expenses:Food                  :      15.00 | Display: 10.27 EUR
-    Assets:Cash                    :     -15.00 | Display: -10.27 EUR
-ID: 4 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD -> EUR]
-    Expenses:Food                  :      50.00 | Display: 34.25 EUR
-    Assets:Cash                    :     -50.00 | Display: -34.25 EUR
-ID: 5 | Date: 10/01/2026 | Desc: Taxi to Work | [SGD -> EUR]
-    Expenses:Transport             :      20.00 | Display: 13.70 EUR
-    Assets:Cash                    :     -20.00 | Display: -13.70 EUR
-ID: 6 | Date: 01/02/2026 | Desc: Morning Coffee | [SGD -> EUR]
-    Expenses:Food                  :       5.00 | Display: 3.42 EUR
-    Assets:Cash                    :      -5.00 | Display: -3.42 EUR
-ID: 2 | Date: 15/03/2026 | Desc: Netflix | [USD -> EUR]
-    Expenses                       :      15.00 | Display: 13.76 EUR
-    Assets:Cash                    :     -15.00 | Display: -13.76 EUR
-ID: 7 | Date: 15/03/2026 | Desc: Netflix | [USD -> EUR]
-    Expenses:Entertainment         :      15.00 | Display: 13.76 EUR
-    Assets:Credit                  :     -15.00 | Display: -13.76 EUR
-ID: 8 | Date: 16/03/2026 | Desc: Movies | [SGD -> EUR]
-    Expenses                       :      10.00 | Display: 6.85 EUR
-    Assets:Cash                    :     -10.00 | Display: -6.85 EUR
-ID: 9 | Date: 20/03/2026 | Desc: Buying Nvidia | [USD -> EUR]
-    Assets:Investment              :    1000.00 | Display: 917.43 EUR
-    Assets:Cash                    :   -1000.00 | Display: -917.43 EUR
-
-The displayed values are view-only by default.
-Type 'confirm all' to store ALL transactions in EUR.
-Type 'confirm ID' to store one displayed transaction in EUR.
-Example: confirm 3
-Enter any other command to ignore.
-Enter Command: Transaction 1 confirmed and stored in EUR.
-Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [EUR]
-    Expenses:Food                  :      10.27
-    Assets:Cash                    :     -10.27
-ID: 3 | Date: 01/01/2026 | Desc: Office Lunch | [SGD]
-    Expenses:Food                  :      15.00
-    Assets:Cash                    :     -15.00
-ID: 4 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD]
-    Expenses:Food                  :      50.00
-    Assets:Cash                    :     -50.00
-ID: 5 | Date: 10/01/2026 | Desc: Taxi to Work | [SGD]
-    Expenses:Transport             :      20.00
-    Assets:Cash                    :     -20.00
-ID: 6 | Date: 01/02/2026 | Desc: Morning Coffee | [SGD]
-    Expenses:Food                  :       5.00
-    Assets:Cash                    :      -5.00
-ID: 2 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses                       :      15.00
-    Assets:Cash                    :     -15.00
-ID: 7 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses:Entertainment         :      15.00
-    Assets:Credit                  :     -15.00
-ID: 8 | Date: 16/03/2026 | Desc: Movies | [SGD]
-    Expenses                       :      10.00
-    Assets:Cash                    :     -10.00
-ID: 9 | Date: 20/03/2026 | Desc: Buying Nvidia | [USD]
-    Assets:Investment              :    1000.00
-    Assets:Cash                    :   -1000.00
-Enter Command: Enter Command: ID: 4 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD -> USD]
-    Expenses:Food                  :      50.00 | Display: 37.33 USD
-    Assets:Cash                    :     -50.00 | Display: -37.33 USD
-
-The displayed values are view-only by default.
-Type 'confirm all' to store ALL transactions in USD.
-Type 'confirm ID' to store one displayed transaction in USD.
-Example: confirm 3
-Enter any other command to ignore.
-Enter Command: Transaction 1 confirmed and stored in USD.
-Transaction 2 confirmed and stored in USD.
-Transaction 3 confirmed and stored in USD.
-Transaction 4 confirmed and stored in USD.
-Transaction 5 confirmed and stored in USD.
-Transaction 6 confirmed and stored in USD.
-Transaction 7 confirmed and stored in USD.
-Transaction 8 confirmed and stored in USD.
-Transaction 9 confirmed and stored in USD.
-All 9 transactions have been confirmed and stored in USD.
+Enter Command: Enter Command: Enter Command: Error: null
+Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+Enter Command: Error: null
+Enter Command: Enter Command: Error: null
+Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
 Enter Command: Enter Command: Transaction edited successfully.
 Enter Command: Enter Command: ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
 
 ASSETS
-  Assets:Cash                                     -1109.66
+  Assets:Cash                                     -1135.00
   Assets:Credit                                     -15.00
   Assets:Investment                                1000.00
-  Total Assets                                   -124.66
+  Total Assets                                   -150.00
 
 LIABILITIES
   Total Liabilities                                 0.00
 
 EQUITY
   Retained Earnings Breakdown
-    Expenses                                          -22.47
+    Expenses                                          -25.00
     Expenses:Entertainment                            -15.00
-    Expenses:Food                                     -72.26
-    Expenses:Transport                                -14.93
-  Current Period Net Income                      -124.66
-  Total Equity                                   -124.66
+    Expenses:Food                                     -90.00
+    Expenses:Transport                                -20.00
+  Current Period Net Income                      -150.00
+  Total Equity                                   -150.00
 
 CHECK
-  Total Assets                                   -124.66
-  Liabilities + Total Equity                     -124.66
+  Total Assets                                   -150.00
+  Liabilities + Total Equity                     -150.00
   Equation Status                             PASS
 =========================
 Enter Command: ===== BALANCE SHEET =====
@@ -327,10 +252,10 @@ Scope: ALL ACCOUNTS
 Report Currency: USD
 
 ASSETS
-  Assets:Cash                                     -1109.66
+  Assets:Cash                                     -1104.59
   Assets:Credit                                     -15.00
   Assets:Investment                                1000.00
-  Total Assets                                   -124.66
+  Total Assets                                   -119.59
 
 LIABILITIES
   Total Liabilities                                 0.00
@@ -339,14 +264,14 @@ EQUITY
   Retained Earnings Breakdown
     Expenses                                          -22.47
     Expenses:Entertainment                            -15.00
-    Expenses:Food                                     -72.26
+    Expenses:Food                                     -67.19
     Expenses:Transport                                -14.93
-  Current Period Net Income                      -124.66
-  Total Equity                                   -124.66
+  Current Period Net Income                      -119.59
+  Total Equity                                   -119.59
 
 CHECK
-  Total Assets                                   -124.66
-  Liabilities + Total Equity                     -124.66
+  Total Assets                                   -119.59
+  Liabilities + Total Equity                     -119.59
   Equation Status                             PASS
 =========================
 Enter Command: ===== BALANCE SHEET =====
@@ -354,10 +279,10 @@ Scope: Assets
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
 
 ASSETS
-  Assets:Cash                                     -1109.66
+  Assets:Cash                                     -1135.00
   Assets:Credit                                     -15.00
   Assets:Investment                                1000.00
-  Total Assets                                   -124.66
+  Total Assets                                   -150.00
 
 LIABILITIES
   Total Liabilities                                 0.00
@@ -368,7 +293,7 @@ EQUITY
   Total Equity                                      0.00
 
 CHECK
-  Total Assets                                   -124.66
+  Total Assets                                   -150.00
   Liabilities + Total Equity                        0.00
   Equation Status                             FILTERED VIEW (may not balance)
 =========================
@@ -376,65 +301,34 @@ Enter Command: Enter Command: Error: Missing transaction ID or filter flags to d
 Enter Command: Error: No valid filters provided. Use -begin, -end, or -match.
 Enter Command: Successfully deleted 1 transaction(s) matching criteria.
 Enter Command: Enter Command: Successfully deleted 1 transaction(s) matching criteria.
-Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Edited Office Lunch | [USD]
-    Expenses:Food                  :      20.00
-    Assets:Cash                    :     -20.00
-ID: 3 | Date: 01/01/2026 | Desc: Office Lunch | [USD]
-    Expenses:Food                  :      11.20
-    Assets:Cash                    :     -11.20
-ID: 5 | Date: 10/01/2026 | Desc: Taxi to Work | [USD]
-    Expenses:Transport             :      14.93
-    Assets:Cash                    :     -14.93
-ID: 2 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses                       :      15.00
-    Assets:Cash                    :     -15.00
-ID: 7 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses:Entertainment         :      15.00
-    Assets:Credit                  :     -15.00
-ID: 8 | Date: 16/03/2026 | Desc: Movies | [USD]
-    Expenses                       :       7.47
-    Assets:Cash                    :      -7.47
-ID: 9 | Date: 20/03/2026 | Desc: Buying Nvidia | [USD]
-    Assets:Investment              :    1000.00
-    Assets:Cash                    :   -1000.00
+Enter Command: Error: null
 Enter Command: Enter Command: Successfully deleted 3 transaction(s) matching criteria.
-Enter Command: ID: 2 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses                       :      15.00
-    Assets:Cash                    :     -15.00
-ID: 7 | Date: 15/03/2026 | Desc: Netflix | [USD]
-    Expenses:Entertainment         :      15.00
-    Assets:Credit                  :     -15.00
-ID: 8 | Date: 16/03/2026 | Desc: Movies | [USD]
-    Expenses                       :       7.47
-    Assets:Cash                    :      -7.47
-ID: 9 | Date: 20/03/2026 | Desc: Buying Nvidia | [USD]
-    Assets:Investment              :    1000.00
-    Assets:Cash                    :   -1000.00
+Enter Command: Error: null
 Enter Command: ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
 
 ASSETS
-  Assets:Cash                                     -1022.47
+  Assets:Cash                                     -1025.00
   Assets:Credit                                     -15.00
   Assets:Investment                                1000.00
-  Total Assets                                    -37.47
+  Total Assets                                    -40.00
 
 LIABILITIES
   Total Liabilities                                 0.00
 
 EQUITY
   Retained Earnings Breakdown
-    Expenses                                          -22.47
+    Expenses                                          -25.00
     Expenses:Entertainment                            -15.00
-  Current Period Net Income                       -37.47
-  Total Equity                                    -37.47
+  Current Period Net Income                       -40.00
+  Total Equity                                    -40.00
 
 CHECK
-  Total Assets                                    -37.47
-  Liabilities + Total Equity                      -37.47
+  Total Assets                                    -40.00
+  Liabilities + Total Equity                      -40.00
   Equation Status                             PASS
 =========================
 Enter Command: Enter Command: Enter Command: All transactions have been cleared.
-Enter Command: No matching transactions found.
+Enter Command: Error: null
 Enter Command: --- Transaction Manager Exited ---
