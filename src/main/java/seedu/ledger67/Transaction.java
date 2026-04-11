@@ -81,10 +81,9 @@ public class Transaction {
     public static LocalDate parseDate(String dateStr) {
         assert dateStr != null : "Date string cannot be null.";
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            return LocalDate.parse(dateStr, formatter);
+            return LocalDate.parse(dateStr, Config.DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("DATE must be in DD/MM/YYYY format.");
+            throw new IllegalArgumentException("DATE must be a valid calendar date in DD/MM/YYYY format.");
         }
     }
 

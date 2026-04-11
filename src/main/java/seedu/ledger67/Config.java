@@ -3,6 +3,7 @@ package seedu.ledger67;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.time.format.ResolverStyle;
 
 /**
  * Configuration constants for the Ledger67 application.
@@ -11,9 +12,9 @@ import java.util.List;
 public class Config {
     
     // Date and Time Configuration
-    public static final String DATE_FORMAT_PATTERN = "dd/MM/yyyy";
-    public static final DateTimeFormatter DATE_FORMATTER = 
-        DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
+    public static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/uuuu")
+                    .withResolverStyle(ResolverStyle.STRICT);
     
     // Currency Configuration
     public static final List<String> SUPPORTED_CURRENCIES = 

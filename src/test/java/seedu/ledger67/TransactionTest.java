@@ -40,7 +40,7 @@ public class TransactionTest {
         Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             createTransaction("2023-03-15", "Groceries", 50.0, "debit", "USD");
         });
-        Assertions.assertEquals("DATE must be in DD/MM/YYYY format.", exception.getMessage());
+        Assertions.assertEquals("DATE must be a valid calendar date in DD/MM/YYYY format.", exception.getMessage());
     }
 
     @Test
