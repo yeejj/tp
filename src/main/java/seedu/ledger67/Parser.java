@@ -24,9 +24,11 @@ public class Parser {
     private final LiveExchangeRateService liveExchangeRateService;
 
     // Pending confirmation state
+// Pending confirmation state
     private Integer pendingTransactionId = null;
     private String pendingTargetCurrency = null;
     private boolean pendingFromListView = false;
+    private List<Integer> pendingDisplayedTransactionIds = new ArrayList<>();
 
     private boolean isUiAssistOn = false;
     private Scanner scanner;
@@ -103,6 +105,7 @@ public class Parser {
         pendingTransactionId = null;
         pendingTargetCurrency = null;
         pendingFromListView = false;
+        pendingDisplayedTransactionIds.clear();
     }
 
     /**
@@ -148,6 +151,11 @@ public class Parser {
                 throw new IllegalArgumentException("Transaction ID for confirm must be an integer.");
             }
 
+            if (!pendingDisplayedTransactionIds.contains(id)) {
+                throw new IllegalArgumentException(
+                        "Transaction " + id + " was not in the previous converted list view.");
+            }
+
             confirmAndStoreConvertedTransaction(id, pendingTargetCurrency);
             clearPendingConfirmation();
             return true;
@@ -179,21 +187,18 @@ public class Parser {
     }
 
     private void confirmAndStoreAllDisplayedTransactions(String targetCurrency) {
-        List<Transaction> transactions = list.getTransactions();
-
-        if (transactions.isEmpty()) {
-            System.out.println("No transactions available to confirm.");
-            return;
+        if (pendingDisplayedTransactionIds.isEmpty()) {
+            throw new IllegalArgumentException("No pending converted list results to confirm.");
         }
 
         int updatedCount = 0;
-        for (Transaction transaction : transactions) {
-            confirmAndStoreConvertedTransaction(transaction.getId(), targetCurrency);
+        for (int id : pendingDisplayedTransactionIds) {
+            confirmAndStoreConvertedTransaction(id, targetCurrency);
             updatedCount++;
         }
 
         System.out.printf(
-                "All %d transactions have been confirmed and stored in %s.%n",
+                "All %d displayed transaction(s) have been confirmed and stored in %s.%n",
                 updatedCount,
                 targetCurrency);
     }
@@ -394,10 +399,13 @@ public class Parser {
 
         list.renderTransactions(results);
 
-        if (to != null && !list.getTransactions().isEmpty()) {
+        if (to != null && !results.isEmpty()) {
             pendingTransactionId = null;
             pendingTargetCurrency = to;
             pendingFromListView = true;
+            pendingDisplayedTransactionIds = results.stream()
+                    .map(Transaction::getId)
+                    .toList();
 
             System.out.println();
             System.out.println("The displayed values are view-only by default.");

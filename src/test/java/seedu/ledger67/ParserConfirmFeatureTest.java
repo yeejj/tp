@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,7 +33,7 @@ public class ParserConfirmFeatureTest {
     private final PrintStream originalOut = System.out;
 
     private Transaction createTransaction(String date, String description,
-            double amount, String type, String currency) {
+                                          double amount, String type, String currency) {
         List<Posting> postings = new ArrayList<>();
         if (type.equals("debit")) {
             postings.add(new Posting("Expenses:General", amount));
@@ -189,7 +188,7 @@ public class ParserConfirmFeatureTest {
         assertEquals(converter.convert(10.0, "USD", "SGD"), updated2.getPostings().get(0).getAmount(), 0.0001);
 
         String output = outputStreamCaptor.toString();
-        assertTrue(output.contains("All 2 transactions have been confirmed and stored in SGD."));
+        assertTrue(output.contains("All 2 displayed transaction(s) have been confirmed and stored in SGD."));
     }
 
     @Test
@@ -208,5 +207,26 @@ public class ParserConfirmFeatureTest {
 
         String output = outputStreamCaptor.toString();
         assertTrue(output.contains("The displayed values are view-only by default."));
+    }
+
+    @Test
+    public void testListTransactionToWithNoMatchesThenConfirmAllDoesNothing() {
+        Transaction t = createTransaction("10/10/2023", "Coffee", 5.0, "debit", "USD");
+        list.addTransaction(t);
+
+        int id = t.getId();
+
+        outputStreamCaptor.reset();
+        String input = "list transaction -match DoesNotExist -to SGD\nconfirm all\nlist\nexit\n";
+        runParserWithInput(input);
+
+        Transaction unchanged = list.getTransactionById(id);
+
+        assertEquals("USD", unchanged.getCurrency());
+        assertEquals(5.0, unchanged.getPostings().get(0).getAmount(), 0.0001);
+
+        String output = outputStreamCaptor.toString();
+        assertTrue(output.contains("No matching transactions found."));
+        assertTrue(!output.contains("The displayed values are view-only by default."));
     }
 }
