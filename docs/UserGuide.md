@@ -61,6 +61,21 @@ This allows accounts to be organised into categories and subcategories:
 
 This structure enables more powerful filtering and organisation of financial data.
 
+### Sign Convention
+Ledger67 uses a **signed amount model** instead of debit/credit.
+* `+` indicates an **increase**
+* `-` indicates a **decrease**
+
+#### Recommended Usage
+| Account Type                | Increase | Decrease |
+| --------------------------- | -------- | -------- |
+| Assets, Expenses            | `+`      | `-`      |
+| Liabilities, Equity, Income | `-`      | `+`      |
+
+#### Note
+Ledger67 only checks that transactions are **balanced**, and does not enforce sign conventions.
+Users are encouraged to follow the recommended usage for consistency.
+
 ### Key Concepts for Beginners
 
 #### 1. The Accounting Equation
