@@ -111,4 +111,33 @@ public class StorageTest {
         Assertions.assertEquals("SGD", loaded.getCurrency());
         Assertions.assertEquals("Book Purchase", loaded.getDescription());
     }
+
+    @Test
+    public void testLoadWithCorruptedLine_skipsBadLineAndLoadsValidOnes() {
+        Storage storage = new Storage(TEST_FILE_PATH);
+
+        try {
+            File file = new File(TEST_FILE_PATH);
+            File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+
+            java.nio.file.Files.writeString(
+                    file.toPath(),
+                    "1\t15/03/2023\tValid Entry\tUSD\tExpenses:General=50.0;Assets:Cash=-50.0\n"
+                            + "2\t33/03/2026\tBad Date\tUSD\tExpenses:General=10.0;Assets:Cash=-10.0\n"
+                            + "3\t16/03/2023\tAnother Valid Entry\tSGD\tExpenses:General=20.0;Assets:Cash=-20.0\n"
+            );
+
+            List<Transaction> loadedList = storage.load();
+
+            Assertions.assertEquals(2, loadedList.size());
+            Assertions.assertEquals("Valid Entry", loadedList.get(0).getDescription());
+            Assertions.assertEquals("Another Valid Entry", loadedList.get(1).getDescription());
+        } catch (Exception e) {
+            Assertions.fail("Test should not throw exception, but got: " + e.getMessage());
+        }
+    }
+
 }

@@ -37,43 +37,51 @@ public class Storage {
             List<String> lines = Files.readAllLines(Paths.get(filePath));
             int maxId = 0;
 
-            for (String line : lines) {
+            for (int lineNumber = 0; lineNumber < lines.size(); lineNumber++) {
+                String line = lines.get(lineNumber);
+
                 if (line.trim().isEmpty()) {
                     continue;
                 }
 
-                String[] parts = line.split("\t", -1);
-                // We now expect 5 parts instead of 6: ID, Date, Desc, Currency, Postings
-                if (parts.length < 5) {
-                    logger.warning("Skipping malformed line in storage: " + line);
-                    continue;
-                }
+                try {
+                    String[] parts = line.split("\t", -1);
 
-                int id = Integer.parseInt(parts[0]);
-                String date = parts[1];
-                String description = unescape(parts[2]);
-                String currency = parts[3];
-                String postingsJoined = parts[4];
+                    // Expected format: ID, Date, Desc, Currency, Postings
+                    if (parts.length < 5) {
+                        throw new IllegalArgumentException("Malformed line: expected 5 fields.");
+                    }
 
-                // Deserialize the postings string back into the "Account Amount" format
-                List<String> postingStrings = new ArrayList<>();
-                if (!postingsJoined.isEmpty()) {
-                    String[] postingTokens = postingsJoined.split(";");
-                    for (String token : postingTokens) {
-                        String[] accAmt = token.split("=");
-                        if (accAmt.length == 2) {
-                            // Rebuild the string to pass into the Transaction constructor
+                    int id = Integer.parseInt(parts[0]);
+                    String date = parts[1];
+                    String description = unescape(parts[2]);
+                    String currency = parts[3];
+                    String postingsJoined = parts[4];
+
+                    List<String> postingStrings = new ArrayList<>();
+                    if (!postingsJoined.isEmpty()) {
+                        String[] postingTokens = postingsJoined.split(";");
+                        for (String token : postingTokens) {
+                            String[] accAmt = token.split("=");
+                            if (accAmt.length != 2) {
+                                throw new IllegalArgumentException("Malformed posting entry: " + token);
+                            }
                             postingStrings.add(accAmt[0] + " " + accAmt[1]);
                         }
                     }
-                }
-                List<Posting> postings = Parser.convertStringList2PostingList(postingStrings);
-                // Call your Transaction factory/constructor
-                Transaction transaction = Transaction.fromStorage(id, date, description, postings, currency);
-                transactions.add(transaction);
 
-                if (id > maxId) {
-                    maxId = id;
+                    List<Posting> postings = Parser.convertStringList2PostingList(postingStrings);
+                    Transaction transaction = Transaction.fromStorage(id, date, description, postings, currency);
+                    transactions.add(transaction);
+
+                    if (id > maxId) {
+                        maxId = id;
+                    }
+                } catch (Exception e) {
+                    logger.warning("Skipping corrupted line " + (lineNumber + 1) + " in storage: " + line
+                            + " | Reason: " + e.getMessage());
+                    System.out.println("Warning: Skipping corrupted line " + (lineNumber + 1)
+                            + " in storage file. Please check " + filePath + " manually.");
                 }
             }
 
