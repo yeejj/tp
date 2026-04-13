@@ -1,6 +1,36 @@
-# User Guide
+# User Guide - Ledger 67
 
-## Introduction
+## Table of Contents
+
+* [User Guide - Ledger 67](#user-guide---ledger-67)
+  * [Table of Contents](#table-of-contents)
+  * [1. Introduction](#1-introduction)
+  * [2. Quick Start](#2-quick-start)
+    * [2.1 Prerequisites](#21-prerequisites)
+    * [2.2 Getting Started](#22-getting-started)
+  * [3. Understanding Double-Entry Accounting](#3-understanding-double-entry-accounting)
+    * [3.1 What is Double-Entry Bookkeeping?](#31-what-is-double-entry-bookkeeping)
+    * [3.2 Hierarchical Accounts](#32-hierarchical-accounts)
+    * [3.3 Sign Convention](#33-sign-convention)
+    * [3.4 Monetary Precision](#34-monetary-precision)
+    * [3.5 Key Concepts for Beginners](#35-key-concepts-for-beginners)
+  * [4. Features](#4-features)
+    * [4.1 UI Assist: `uiassist`](#41-ui-assist-uiassist)
+    * [4.2 Adding a Transaction: `add`](#42-adding-a-transaction-add)
+    * [4.3 Listing and Filtering Transactions: `list`](#43-listing-and-filtering-transactions-list)
+    * [4.4 Editing a Transaction: `edit`](#44-editing-a-transaction-edit)
+    * [4.5 Deleting Transactions: `delete`](#45-deleting-transactions-delete)
+    * [4.6 Clearing All Transactions: `clear`](#46-clearing-all-transactions-clear)
+    * [4.7 Currency Conversion: `convert`](#47-currency-conversion-convert)
+    * [4.8 Refreshing Exchange Rates: `rates`](#48-refreshing-exchange-rates-rates)
+    * [4.9 Confirming Converted Transactions: `confirm`](#49-confirming-converted-transactions-confirm)
+    * [4.10 Viewing the Balance Sheet: `balance`](#410-viewing-the-balance-sheet-balance)
+    * [4.11 Getting Help: `help`](#411-getting-help-help)
+  * [5. FAQ](#5-faq)
+  * [6. Command Summary](#6-command-summary)
+  * [7. Tips for Effective Use](#7-tips-for-effective-use)
+
+## 1. Introduction
 
 **Ledger67** is a command-line double-entry accounting system designed to help individuals and small businesses manage their financial transactions efficiently. Built on the principles of double-entry bookkeeping, Ledger67 ensures that every financial transaction is recorded with both debit and credit entries, maintaining the fundamental accounting equation: **Assets = Liabilities + Equity**.
 
@@ -8,13 +38,13 @@ Whether you're a student learning accounting, a small business owner, or someone
 
 Ledger67 also provides balance sheet generation and export features to help users analyse their financial position in real time.
 
-## Quick Start
+## 2. Quick Start
 
-### Prerequisites
+### 2.1 Prerequisites
 1. Ensure that you have **Java 17 or above** installed on your computer.
 2. Download the latest version of `Ledger67` from the project repository.
 
-### Getting Started
+### 2.2 Getting Started
 #### Option 1: Using the JAR file (Simplest)
 1. **Download the application**: Obtain the `tp.jar` file from the latest release.
 2. **Run the application**: Open a terminal and navigate to the directory containing `tp.jar`, then run:
@@ -44,12 +74,12 @@ If you have the source code and want to build from source:
 
 3. **Start recording transactions**: Use the commands below to add, view, edit, and manage your financial transactions.
 
-## Understanding Double-Entry Accounting
+## 3. Understanding Double-Entry Accounting
 
-### What is Double-Entry Bookkeeping?
+### 3.1 What is Double-Entry Bookkeeping?
 Double-entry bookkeeping is an accounting method where every financial transaction affects at least two accounts. For every debit entry, there must be a corresponding credit entry of equal value. This system ensures that the accounting equation always remains balanced.
 
-### Hierarchical Accounts
+### 3.2 Hierarchical Accounts
 
 Ledger67 supports hierarchical account structures using `:`.
 
@@ -61,7 +91,7 @@ This allows accounts to be organised into categories and subcategories:
 
 This structure enables more powerful filtering and organisation of financial data.
 
-### Sign Convention
+### 3.3 Sign Convention
 Ledger67 uses a **signed amount model** instead of debit/credit.
 * `+` indicates an **increase**
 * `-` indicates a **decrease**
@@ -77,7 +107,7 @@ Ledger67 uses a **signed amount model** instead of debit/credit.
 Ledger67 only checks that transactions are **balanced**, and does not enforce sign conventions.
 Users are encouraged to follow the recommended usage for consistency.
 
-### Monetary Precision
+### 3.4 Monetary Precision
 Ledger67 stores monetary values using **2 decimal places**, which is standard for currency amounts.
 
 If users enter values with more than 2 decimal places, Ledger67 will round them before storing them.
@@ -89,7 +119,7 @@ Examples:
 
 Users should therefore avoid entering excessive decimal precision if exact sub-cent values are important.
 
-### Key Concepts for Beginners
+### 3.5 Key Concepts for Beginners
 
 #### 1. The Accounting Equation
 ```
@@ -115,23 +145,23 @@ Postings are records of money going into each category (Assets, Liabilities, Equ
 These categories can have subcategories such as Assets:Cash or Liabilities:Loans
 These `Postings` must balance each other out.
 
-### Example: Recording a Sale
+#### 3. Example: Recording a Sale
 When you make a sale for $100 cash:
 - `Assets:Cash` increases by $100
 - `Income` increases by $100
 
 The equation is balanced and the transaction is valid. In Ledger67, you would record this as a single transaction, and the system understands the double-entry implications.
 
-## Features
+## 4. Features
 
-### 1. UI Assist: `uiassist`
+### 4.1 UI Assist: `uiassist`
 Toggles whether the user is using UI Assist in which the program helps the user guide through the input or the user is using the standard tagging system
 
 **Format:** `uiassist -on/-off`
 `uiassist -on` toggles the UI Assistance on. The user is now using prompted inputs to fill in the details
 `uiassist -off` toggles the UI Assistance off. The user is now using the standard tagging system
 
-### 2. Adding a Transaction: `add`
+### 4.2 Adding a Transaction: `add`
 Adds a new financial transaction to your ledger.
 
 **Format (Manual)**: `add -date DATE -desc DESCRIPTION -p POSTING1 -p POSTING2 -c CURRENCY`
@@ -182,7 +212,7 @@ ID: 4 | Date: 18/03/2026 | Desc: DAILYEXPENSE | [SGD]
 ======================================================================
 ```
 
-### 3. Listing and Filtering Transactions: `list`
+### 4.3 Listing and Filtering Transactions: `list`
 Displays recorded transactions. You can view all transactions or use filters to narrow down the results by date, account, keyword, or currency.
 
 **Format**: `list [-acc ACCOUNT] [-begin DATE] [-end DATE] [-match REGEX] [-to CURRENCY]`
@@ -263,7 +293,7 @@ ID: 1 | Date: 18/03/2026 | Desc: Office supplies | [SGD -> USD]
 
 ---
 
-### 4. Editing a Transaction: `edit`
+### 4.4 Editing a Transaction: `edit`
 Modifies an existing transaction.
 
 **Format**: `edit ID [-date DATE] [-desc DESC] [-p POSTING] [-c CURRENCY]`
@@ -304,7 +334,7 @@ ID: 4 | Date: 18/03/2026 | Desc: DAILYEXPENSE | [EUR]
 - Edited posting amounts are also stored to **2 decimal places**.
 - If more than 2 decimal places are entered, Ledger67 will round them before saving.
 
-### 5. Deleting Transactions: `delete`
+### 4.5 Deleting Transactions: `delete`
 Removes transactions from the ledger. You can delete a single transaction by its ID or remove multiple transactions at once using filters.
 
 #### Single Deletion
@@ -347,7 +377,7 @@ No matching transactions found.
 ```
 
 
-### 6. Clearing All Transactions: `clear`
+### 4.6 Clearing All Transactions: `clear`
 Removes all transactions from the ledger (use with caution!).
 
 **Format**: `clear`
@@ -361,7 +391,7 @@ clear
 - IDs will increase even after clear to keep to ledger semantics.
 
 
-### 7. Currency Conversion: `convert`
+### 4.7 Currency Conversion: `convert`
 Converts amounts between different currencies using current exchange rates.
 
 **Format**: `convert -a AMOUNT -from SOURCE_CURRENCY -to TARGET_CURRENCY`
@@ -403,7 +433,7 @@ Transaction 3: 50.00 USD = 67.75 SGD
 - This is a view-mode feature only. It does NOT overwrite the stored transaction currency or amount.
 - To store the converted value, use the `confirm` command.
 
-### 8. Refreshing Exchange Rates: `rates`
+### 4.8 Refreshing Exchange Rates: `rates`
 Refreshes live exchange rates from external sources.
 
 **Format**: `rates refresh`
@@ -417,7 +447,7 @@ Output:
 Exchange rates refreshed successfully for 2026-03-19.
 ```
 
-### 9. Confirming Converted Transactions: `confirm`
+### 4.9 Confirming Converted Transactions: `confirm`
 
 After using conversion commands, Ledger67 allows you to **store the converted values permanently**.
 
@@ -496,7 +526,7 @@ confirm 2
 
 ---
 
-### 10. Viewing the Balance Sheet: `balance`
+### 4.10 Viewing the Balance Sheet: `balance`
 
 Displays a summary of your financial position based on the accounting equation:
 ```
@@ -646,7 +676,7 @@ The CSV includes:
 
 ---
 
-### Important Notes
+#### Important Notes
 
 - `balance` is a **read-only feature**
 - It does NOT modify any transactions
@@ -655,7 +685,7 @@ The CSV includes:
 
 ---
 
-### 11. Getting Help: `help`
+### 4.11 Getting Help: `help`
 Displays available commands and usage instructions.
 
 **Format**: `help`
@@ -665,7 +695,7 @@ Displays available commands and usage instructions.
 help
 ```
 
-## FAQ
+## 5. FAQ
 
 **Q**: How do I transfer my data to another computer?
 
@@ -696,7 +726,7 @@ Transactions that do not balance will be rejected.
 
 **A**: If a duplicate single-value flag is provided, the first input will be chosen.
 
-## Command Summary
+## 6. Command Summary
 
 | Command                      | Format                                                               | Description                              |
 |------------------------------|----------------------------------------------------------------------|------------------------------------------|
@@ -721,7 +751,7 @@ Transactions that do not balance will be rejected.
 
 
 
-## Tips for Effective Use
+## 7. Tips for Effective Use
 
 1. **Be Consistent**: Use clear, descriptive transaction descriptions that you'll understand later.
 2. **Regular Updates**: Record transactions regularly to maintain accurate financial records.
