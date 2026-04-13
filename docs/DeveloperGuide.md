@@ -31,7 +31,10 @@ Ledger67 is built on a layered architecture that emphasizes data integrity throu
 
 **1. Double-Entry Integrity**  
 Unlike simple expense trackers, Ledger67 enforces a "Balanced" rule for every transaction. A transaction is only committed if the sum of its internal amounts equals zero, following the equation:  
-`Assets = Equity - Liabilities + (Income - Expenses)`
+Assets = Liabilities + Equity
+
+Where Equity is affected by Income and Expenses:
+Equity = Initial Equity + (Income - Expenses)
 
 **2. Hierarchical Account System**  
 Accounts are not flat strings; they are hierarchical objects (`Account`). This allows users to categorize finances using colons (e.g., `Assets:Bank:DBS`) and enables the system to perform "roll-up" reporting where a filter for `Assets` includes all sub-accounts.
@@ -528,7 +531,10 @@ Implementer: JJ
 The Balance Sheet feature allows users to generate a real-time summary of their financial position based on the accounting equation:
 
 ```
-Assets = Equity - Liabilities + (Income - Expenses)
+Assets = Liabilities + Equity
+
+Where Equity is affected by Income and Expenses:
+Equity = Initial Equity + (Income - Expenses)
 ```
 
 It aggregates all transactions and computes totals across hierarchical account categories.

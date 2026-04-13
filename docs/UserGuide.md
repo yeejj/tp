@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Ledger67** is a command-line double-entry accounting system designed to help individuals and small businesses manage their financial transactions efficiently. Built on the principles of double-entry bookkeeping, Ledger67 ensures that every financial transaction is recorded with both debit and credit entries, maintaining the fundamental accounting equation: **Assets = Equity - Liabilities + (Income - Expenses)**.
+**Ledger67** is a command-line double-entry accounting system designed to help individuals and small businesses manage their financial transactions efficiently. Built on the principles of double-entry bookkeeping, Ledger67 ensures that every financial transaction is recorded with both debit and credit entries, maintaining the fundamental accounting equation: **Assets = Liabilities + Equity**.
 
 Whether you're a student learning accounting, a small business owner, or someone who wants to better manage personal finances, Ledger67 provides a simple yet powerful way to track your financial activities with proper accounting rigor.
 
