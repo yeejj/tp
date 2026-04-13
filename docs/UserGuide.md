@@ -76,6 +76,18 @@ Ledger67 uses a **signed amount model** instead of debit/credit.
 Ledger67 only checks that transactions are **balanced**, and does not enforce sign conventions.
 Users are encouraged to follow the recommended usage for consistency.
 
+### Monetary Precision
+Ledger67 stores monetary values using **2 decimal places**, which is standard for currency amounts.
+
+If users enter values with more than 2 decimal places, Ledger67 will round them before storing them.
+
+Examples:
+- `100.999999` is stored as `101.00`
+- `50.1` is stored as `50.10`
+- `75.555` is stored as `75.56`
+
+Users should therefore avoid entering excessive decimal precision if exact sub-cent values are important.
+
 ### Key Concepts for Beginners
 
 #### 1. The Accounting Equation
@@ -146,6 +158,8 @@ add -date 18/03/2026 -desc "Office supplies" -p "Assets:Cash -45.50" -p "Expense
 **Notes**
 - Account roots are not case-sensitive
 - Sub-account names are case-sensitive, this is to preserve acronyms and other valid mixed-cased names.
+- Amounts are stored using standard currency precision of **2 decimal places**.
+- If an amount is entered with more than 2 decimal places, Ledger67 will round it to 2 decimal places before storing it.
 
 **Example**
 ```
@@ -251,6 +265,10 @@ Modifies an existing transaction.
 edit 1 -desc "Office stationery purchase" 
 edit 2 -c EUR
 ```
+
+**Note**
+- Edited posting amounts are also stored to **2 decimal places**.
+- If more than 2 decimal places are entered, Ledger67 will round them before saving.
 
 ### 5. Deleting Transactions: `delete`
 Removes transactions from the ledger. You can delete a single transaction by its ID or remove multiple transactions at once using filters.

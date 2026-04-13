@@ -42,6 +42,21 @@ The system bridges the gap between power users and beginners. It supports a **Fl
 **4. Stateful Confirmation Workflow**  
 To prevent accidental data modification during currency conversion or bulk listing, the `Parser` implements a "Pending state." This allows users to preview converted values in "View-Only" mode before explicitly committing them via a `confirm` command.
 
+**5.  Monetary Precision**
+Ledger67 stores monetary values using **2 decimal places**, which is standard for currency amounts.
+
+If users enter values with more than 2 decimal places, Ledger67 will round them before storing them.
+
+Examples:
+- `100.999999` is stored as `101.00`
+- `50.1` is stored as `50.10`
+- `75.555` is stored as `75.56`
+
+**5.  Sign Convention**
+- Ledger67 uses a **signed amount model** instead of debit/credit.
+- Ledger67 only checks that transactions are **balanced**, and does not enforce sign conventions.
+- Users are encouraged to follow the recommended usage for consistency.
+
 ---
 
 ### Component-Level Design
