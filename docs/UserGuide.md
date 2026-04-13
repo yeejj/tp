@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-*[User Guide - Ledger 67](#user-guide---ledger-67)
+* [User Guide - Ledger 67](#user-guide---ledger-67)
   * [Table of Contents](#table-of-contents)
   * [1. Introduction](#1-introduction)
   * [2. Quick Start](#2-quick-start)
