@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -17,6 +16,7 @@ import java.util.logging.Logger;
  */
 public class Parser {
     private static final Logger logger = Logger.getLogger("Parser");
+    
 
     private final TransactionsList list;
     private final CurrencyConverter converter;
@@ -36,6 +36,7 @@ public class Parser {
     public Parser(TransactionsList list, CurrencyConverter converter,
             ExchangeRateStorage exchangeRateStorage,
             LiveExchangeRateService liveExchangeRateService) {
+        
         assert list != null : "Parser requires a valid TransactionsList instance.";
         assert converter != null : "Parser requires a valid CurrencyConverter instance.";
         assert exchangeRateStorage != null : "Parser requires a valid ExchangeRateStorage instance.";
@@ -78,7 +79,7 @@ public class Parser {
             }
 
             try {
-                logger.log(Level.INFO, "Processing user input: " + input);
+                LoggingConfig.info(logger, "Processing user input: " + input, null);
 
                 if (tryHandlePendingConfirmation(input)) {
                     continue;
@@ -90,9 +91,11 @@ public class Parser {
 
                 processInput(input);
             } catch (Exception e) {
-                logger.log(Level.WARNING, "processing error", e);
+                LoggingConfig.error(logger, "Processing error: " + e, null);
                 System.out.println("Error: " + e.getMessage());
             }
+
+            System.out.println("======================================================================");
         }
         scanner.close();
     }
@@ -374,7 +377,7 @@ public class Parser {
             // Fallback to standard manual posting logic
             List<String> postingStrings = map.get("-p");
             if (postingStrings == null) {
-                throw new IllegalArgumentException("Error: Either -preset or at least one posting (-p) is required.");
+                throw new IllegalArgumentException("Either -preset or at least one posting (-p) is required.");
             }
             postings = convertStringList2PostingList(postingStrings);
         }

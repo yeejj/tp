@@ -23,3 +23,4 @@ issues.md
 exchange-rates.json
 ledger.txt
 *.csv
+./logs/

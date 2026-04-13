@@ -35,6 +35,7 @@ public class LoggingConfig {
             
             // Get the root logger
             Logger rootLogger = Logger.getLogger("");
+            rootLogger.setLevel(Level.OFF);
             
             // Remove default console handlers
             for (Handler handler : rootLogger.getHandlers()) {
@@ -51,25 +52,16 @@ public class LoggingConfig {
             
             // Use JSON formatter for structured logging
             fileHandler.setFormatter(new JsonFormatter());
-            fileHandler.setLevel(Level.ALL);
+            fileHandler.setLevel(Level.OFF);
             
             // Create console handler with simple format
             Handler consoleHandler = new java.util.logging.ConsoleHandler();
             consoleHandler.setFormatter(new SimpleFormatter());
-            consoleHandler.setLevel(Level.INFO);
+            consoleHandler.setLevel(Level.OFF);
             
             // Add handlers to root logger
             rootLogger.addHandler(fileHandler);
             rootLogger.addHandler(consoleHandler);
-            
-            // Set root logger level
-            rootLogger.setLevel(Level.ALL);
-            
-            // Log startup
-            Logger.getLogger(LoggingConfig.class.getName())
-                .info(() -> String.format("Logging system initialized - logFile: %s, timestamp: %s",
-                    LOG_FILE_PATH,
-                    LocalDateTime.now().format(TIMESTAMP_FORMATTER)));
             
         } catch (IOException e) {
             System.err.println("Failed to initialize logging: " + e.getMessage());

@@ -14,12 +14,11 @@ public class Ledger67 {
      * Main entry-point for the Ledger67 application.
      */
     public static void main(String[] args) {
-        // Initialize enhanced logging
         LoggingConfig.setup();
-        
-        logger.info(() -> String.format("Ledger67 application starting - timestamp: %s, args: %s",
+        String s = String.format("Ledger67 application starting - timestamp: %s, args: %s",
             LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            Arrays.toString(args)));
+            Arrays.toString(args));
+        LoggingConfig.info(logger, s, null);
         String rawLogo = """
                  /$$                       /$$                                /$$$$$$  /$$$$$$$$
                 | $$                      | $$                               /$$__  $$|_____ $$/
@@ -52,7 +51,6 @@ public class Ledger67 {
         LiveExchangeRateService liveExchangeRateService = new LiveExchangeRateService();
 
         ExchangeRateData rateData;
-        boolean usingFallbackRates = false;
 
         try {
             rateData = exchangeRateStorage.load();
@@ -60,7 +58,6 @@ public class Ledger67 {
                     + rateData.getDate() + ".");
         } catch (RuntimeException e) {
             rateData = createFallbackRateData();
-            usingFallbackRates = true;
             System.out.println("Warning: Unable to load exchange rates from file.");
             System.out.println("Using fallback exchange rates instead. Conversions may be outdated.");
             System.out.println("Base currency: " + rateData.getBase());

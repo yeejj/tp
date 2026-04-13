@@ -123,6 +123,7 @@ Available commands:
 - Valid root account types are: Assets, Liabilities, Equity, Income, Expenses
 
 For detailed documentation, please refer to the User Guide.
+======================================================================
 Enter Command: Enter Command: UI Assist is now ON. I will guide you through commands.
 Enter Command: Enter Command: How would you like to add the transaction?
 1. Manual Entry
@@ -137,17 +138,28 @@ How many postings do you want to enter? Please enter a valid integer of at least
 How many postings do you want to enter? Please enter a valid integer of at least 2.
 How many postings do you want to enter? Enter posting 1: Enter posting 2: [Generated Command: add -date 01/01/2026 -c SGD -desc Office Lunch -p "15/03/2026" -p "USD"]
 Error: Invalid posting format. Use: -p "Account Amount"
+======================================================================
 Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+======================================================================
 Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+======================================================================
 Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+======================================================================
 Enter Command: Enter Command: UI Assist is now OFF. Standard command mode active.
 Enter Command: Enter Command: Enter Command: Transaction added successfully via manual input.
+======================================================================
 Enter Command: Transaction added successfully via manual input.
+======================================================================
 Enter Command: Transaction added successfully via manual input.
+======================================================================
 Enter Command: Enter Command: Transaction added successfully via manual input.
+======================================================================
 Enter Command: Enter Command: Transaction added successfully via manual input.
+======================================================================
 Enter Command: Enter Command: Transaction added successfully via preset.
+======================================================================
 Enter Command: Transaction added successfully via preset.
+======================================================================
 Enter Command: Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD]
     Expenses:Food                  :      15.00
     Assets:Cash                    :     -15.00
@@ -169,6 +181,7 @@ ID: 6 | Date: 16/03/2026 | Desc: Movies | [SGD]
 ID: 7 | Date: 20/03/2026 | Desc: Buying Nvidia | [USD]
     Assets:Investment              :    1000.00
     Assets:Cash                    :   -1000.00
+======================================================================
 Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD]
     Expenses:Food                  :      15.00
     Assets:Cash                    :     -15.00
@@ -178,6 +191,7 @@ ID: 2 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD]
 ID: 4 | Date: 01/02/2026 | Desc: Morning Coffee | [SGD]
     Expenses:Food                  :       5.00
     Assets:Cash                    :      -5.00
+======================================================================
 Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD]
     Expenses:Food                  :      15.00
     Assets:Cash                    :     -15.00
@@ -187,12 +201,14 @@ ID: 2 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD]
 ID: 3 | Date: 10/01/2026 | Desc: Taxi to Work | [SGD]
     Expenses:Transport             :      20.00
     Assets:Cash                    :     -20.00
+======================================================================
 Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD]
     Expenses:Food                  :      15.00
     Assets:Cash                    :     -15.00
 ID: 2 | Date: 05/01/2026 | Desc: Steak Dinner | [SGD]
     Expenses:Food                  :      50.00
     Assets:Cash                    :     -50.00
+======================================================================
 Enter Command: ID: 1 | Date: 01/01/2026 | Desc: Office Lunch | [SGD -> USD]
     Expenses:Food                  :      15.00 | Display: 11.20 USD
     Assets:Cash                    :     -15.00 | Display: -11.20 USD
@@ -202,12 +218,19 @@ Type 'confirm all' to store ALL transactions in USD.
 Type 'confirm ID' to store one displayed transaction in USD.
 Example: confirm 3
 Enter any other command to ignore.
+======================================================================
 Enter Command: Enter Command: Enter Command: Error: null
+======================================================================
 Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+======================================================================
 Enter Command: Error: null
+======================================================================
 Enter Command: Enter Command: Error: null
+======================================================================
 Enter Command: Error: Unknown command. Use add, list, edit, delete, clear, convert, rates, help, or exit.
+======================================================================
 Enter Command: Enter Command: Transaction edited successfully.
+======================================================================
 Enter Command: Enter Command: ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
@@ -235,6 +258,7 @@ CHECK
   Liabilities + Total Equity                     -120.00
   Equation Status                             PASS
 =========================
+======================================================================
 Enter Command: ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
 Report Currency: USD
@@ -262,6 +286,7 @@ CHECK
   Liabilities + Total Equity                      -93.39
   Equation Status                             PASS
 =========================
+======================================================================
 Enter Command: ===== BALANCE SHEET =====
 Scope: Assets
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
@@ -285,13 +310,21 @@ CHECK
   Liabilities + Total Equity                        0.00
   Equation Status                             FILTERED VIEW (may not balance)
 =========================
+======================================================================
 Enter Command: Enter Command: Error: Missing transaction ID or filter flags to delete.
+======================================================================
 Enter Command: Error: No valid filters provided. Use -begin, -end, -match, or -acc.
+======================================================================
 Enter Command: Successfully deleted 1 transaction(s) matching criteria.
+======================================================================
 Enter Command: Enter Command: Successfully deleted 1 transaction(s) matching criteria.
+======================================================================
 Enter Command: Error: null
+======================================================================
 Enter Command: Enter Command: Successfully deleted 2 transaction(s) matching criteria.
+======================================================================
 Enter Command: Error: null
+======================================================================
 Enter Command: ===== BALANCE SHEET =====
 Scope: ALL ACCOUNTS
 Report Currency: ORIGINAL TRANSACTION CURRENCIES
@@ -317,6 +350,9 @@ CHECK
   Liabilities + Total Equity                      -25.00
   Equation Status                             PASS
 =========================
+======================================================================
 Enter Command: Enter Command: Enter Command: All transactions have been cleared.
+======================================================================
 Enter Command: Error: null
+======================================================================
 Enter Command: --- Transaction Manager Exited ---

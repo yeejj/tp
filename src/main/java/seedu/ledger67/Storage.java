@@ -25,7 +25,7 @@ public class Storage {
      * Loads transactions from the storage file.
      */
     public List<Transaction> load() {
-        logger.info("Loading Transactions from file " + filePath);
+        LoggingConfig.info(logger, "Loading Transactions from file ", null);
         List<Transaction> transactions = new ArrayList<>();
         File file = new File(filePath);
 
@@ -78,8 +78,8 @@ public class Storage {
                         maxId = id;
                     }
                 } catch (Exception e) {
-                    logger.warning("Skipping corrupted line " + (lineNumber + 1) + " in storage: " + line
-                            + " | Reason: " + e.getMessage());
+                    LoggingConfig.warning(logger, "Skipping corrupted line " + (lineNumber + 1) + " in storage: " + line
+                            + " | Reason: " + e.getMessage(), null);
                     System.out.println("Warning: Skipping corrupted line " + (lineNumber + 1)
                             + " in storage file. Please check " + filePath + " manually.");
                 }
@@ -94,10 +94,11 @@ public class Storage {
     }
 
     /**
-     * Saves all transactions into the storage file.
+     * Saves all transactions into t"Skipping corrupted line " + (lineNumber + 1) + " in storage: " + line
+                            + " | Reason: " + e.getMessage()he storage file.
      */
     public void save(List<Transaction> transactions) {
-        logger.info("Saving " + transactions.size() + " transactions to file: " + filePath);
+        LoggingConfig.info(logger, "Saving " + transactions.size() + " transactions to file: " + filePath, null);
         File file = new File(filePath);
         File parent = file.getParentFile();
 

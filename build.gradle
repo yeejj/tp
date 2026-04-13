@@ -43,7 +43,7 @@ application {
 }
 
 shadowJar {
-    archiveBaseName.set("duke")
+    archiveBaseName.set("ledger67")
     archiveClassifier.set("")
 }
 

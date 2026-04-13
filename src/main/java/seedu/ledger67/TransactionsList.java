@@ -45,7 +45,8 @@ public class TransactionsList {
     }
 
     public void addTransaction(Transaction t) {
-        logger.info("Adding transactions: " + t);
+        LoggingConfig.info(logger, "Adding transactions: " + t, null);
+
         if (t.isBalanced()) {
             transactions.add(t);
             save();
@@ -234,7 +235,7 @@ public class TransactionsList {
     }
 
     public void deleteTransaction(int id) {
-        logger.info("Deleting transaction with ID: " + id);
+        LoggingConfig.info(logger, "Deleting transaction with ID: " + id, null);
         Transaction transaction = findById(id);
         transactions.remove(transaction);
         save();
@@ -242,7 +243,7 @@ public class TransactionsList {
     }
 
     public void clearTransactions() {
-        logger.info("Clearing all transactions.");
+        LoggingConfig.info(logger, "Clearing all transactions", null);
         transactions.clear();
         save();
         refreshBalanceSheetCsv();
@@ -250,7 +251,7 @@ public class TransactionsList {
     }
 
     public void editTransaction(int id, String date, String desc, List<Posting> newPostings, String currency) {
-        logger.info("Editing transactions with ID: " + id);
+        LoggingConfig.info(logger, "Editing transactions with ID: " + id, null);
         Transaction transaction = findById(id);
         transaction.update(date, desc, newPostings, currency);
         save();
@@ -341,7 +342,10 @@ public class TransactionsList {
             // Only export to file, do not call balanceSheet.print()
             balanceSheet.exportToCsv("data/balance-sheet.csv");
         } catch (Exception e) {
-            logger.warning("Unable to refresh balance sheet CSV: " + e.getMessage());
+            
+            LoggingConfig.warning(logger,
+            "Unable to refresh balance sheet CSV: " + e.getMessage(),
+            null);
         }
     }
 }
